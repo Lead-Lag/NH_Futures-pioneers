@@ -1,0 +1,30 @@
+{
+  "run_id": "backtest_20261026_231622",
+  "mode": "backtest",
+  "mode_label": "백테스트(봉 체결 가정)",
+  "params": {
+    "bar_minutes": 1,
+    "bb_period": 20,
+    "bb_k": 2.0,
+    "min_band_width_ticks": 8,
+    "stop_ticks": 5,
+    "max_hold_bars": 30,
+    "cooldown_bars_after_stop": 3,
+    "qty": 1,
+    "entry_start": "09:05",
+    "entry_end": "15:15",
+    "flat_time": "15:30",
+    "daily_loss_limit": 30000,
+    "max_trades_per_day": 20,
+    "tick_size": 0.1,
+    "tick_value": 1000,
+    "fee_per_contract": 0
+  },
+  "slippage_ticks": 1,
+  "bars": 2055,
+  "first_bar": "2026-10-20T08:45:00+09:00",
+  "last_bar": "2026-10-26T15:45:00+09:00",
+  "fills": 136,
+  "symbol": "A756B000",
+  "data_source": "domestic_chart-minute (paper) 최근 5거래일"
+}

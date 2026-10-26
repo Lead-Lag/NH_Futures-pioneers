@@ -1,0 +1,3 @@
+﻿intent_id,intent_ts,purpose,side,qty,order_type,reason,ref_price,sent_ts,ord_no,status,filled_qty,avg_price,message
+1,2026-10-26T14:17:00+09:00,ENTRY_SHORT,SELL,1,시장가 FAS,상단밴드 이탈 뒤 복귀,1321.3,2026-10-26T14:17:03.730+09:00,0000001637,체결,1,1321.3,
+2,2026-10-26T14:32:00+09:00,EXIT_TP,BUY,1,시장가 FAS,종가 1321.2 ≤ 중심선 1321.30,1321.2,2026-10-26T14:35:38.703+09:00,0000001697,체결,1,1321.0,
