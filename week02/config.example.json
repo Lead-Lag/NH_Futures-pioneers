@@ -1,0 +1,6 @@
+{
+  "_설명": "이 파일을 config.local.json 으로 복사해 키를 넣으세요. config.local.json 은 .gitignore 에 있어 GitHub 에 올라가지 않습니다.",
+  "environment": "paper",
+  "paper": { "app_key": "", "app_secret": "", "base_url": "" },
+  "real":  { "app_key": "", "app_secret": "", "base_url": "" }
+}
