@@ -1,2 +1,0 @@
-﻿trade_no,direction,qty,entry_time,entry_price,exit_time,exit_price,exit_reason,ticks,gross_pl,fee,net_pl,held_bars,held_sec,daily_pnl_after
-1,SHORT,1,2026-10-26T14:17:04.581432+09:00,1321.3,2026-10-26T14:35:39.554977+09:00,1321.0,EXIT_TP,3.0,3000,0,3000,15,1115,3000
