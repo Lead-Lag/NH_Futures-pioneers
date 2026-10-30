@@ -47,6 +47,12 @@ APIS: dict[str, tuple[str, str]] = {
 
 MIN_INTERVAL = {"quote": 0.12, "account": 0.12, "order": 0.25}
 
+# 조회 API 는 응답을 못 받으면 몇 번 더 물어봅니다(같은 값을 다시 묻는 것이라 안전).
+# 주문 계열은 **절대** 다시 보내지 않습니다 — 접수됐는지 모르는 주문이 두 번 나갈 수 있습니다.
+ORDER_APIS = {"domestic_order", "domestic_modify", "domestic_cancel"}
+READ_RETRIES = 3  # 첫 시도 뒤 추가로 몇 번
+READ_BACKOFF = (1.0, 2.0, 4.0)  # 초
+
 # 정상인데도 errorCode 가 실려 오는 값 (공개 저장소 error_codes.OK_CODES)
 OK_CODES = {"EGW002", "EGW013", "0"}
 
@@ -119,6 +125,7 @@ class NHClient:
         self._token_type = "Bearer"
         self._expires: datetime | None = None
         self._last_call: dict[str, float] = {}
+        self._issued_at = datetime.min.replace(tzinfo=KST)
 
     # ------------------------------------------------------------ 인증
     def _fingerprint(self) -> str:
@@ -180,16 +187,36 @@ class NHClient:
         self._token = body["access_token"]
         self._token_type = str(body.get("token_type") or "Bearer")
         self._expires = _parse_expiry(body)
+        self._issued_at = datetime.now(KST)
         self._save_token()
 
     def ensure_token(self) -> None:
-        if self._token and self._expires and datetime.now(KST) + timedelta(minutes=1) < self._expires:
+        now = datetime.now(KST)
+        if self._token and self._expires and now + timedelta(minutes=1) < self._expires:
+            return
+        # 만료 1분 전부터 새로 받는데, 서버가 만료 전에는 **같은 토큰(같은 만료 시각)**을 돌려줄 수
+        # 있습니다(10/28 실행에서 14:02~14:03 사이 5초마다 14번 발급 확인). 방금 받았는데 아직
+        # 만료 전이면 그대로 쓰고, 다시 받는 것은 1분에 한 번까지만 합니다.
+        if (self._token and self._expires and now < self._expires
+                and now - self._issued_at < timedelta(minutes=1)):
             return
         if not self._load_cached_token():
             self._issue_token()
 
     # ------------------------------------------------------------ 호출
     def call(self, api: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        if api in ORDER_APIS:
+            return self._call_once(api, payload)
+        for attempt in range(READ_RETRIES + 1):
+            try:
+                return self._call_once(api, payload)
+            except TransportError:
+                if attempt >= READ_RETRIES:
+                    raise
+                time.sleep(READ_BACKOFF[min(attempt, len(READ_BACKOFF) - 1)])
+        raise AssertionError("unreachable")
+
+    def _call_once(self, api: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
         path, grade = APIS[api]
         self._throttle(grade)
         self.ensure_token()
@@ -220,10 +247,12 @@ class NHClient:
             r = self.http.post(self.creds.url + path, headers=headers, json=payload, timeout=self.timeout)
         except requests.Timeout as exc:
             self._log(api, None, started, "TIMEOUT", str(exc))
-            raise TransportError(api, "응답 시간 초과 — 처리 여부 불명, 주문내역으로 확인 필요") from exc
+            if api in ORDER_APIS:
+                raise TransportError(api, "응답 시간 초과 — 주문 접수 여부 불명, 주문내역으로 확인 필요") from exc
+            raise TransportError(api, f"응답 시간 초과({self.timeout:.0f}초) — 조회라서 다시 시도") from exc
         except requests.RequestException as exc:
             self._log(api, None, started, "TRANSPORT", str(exc))
-            raise TransportError(api, f"연결 실패: {exc}") from exc
+            raise TransportError(api, f"연결 실패(인터넷·DNS 확인): {type(exc).__name__}") from exc
         return r, _json_or_text(r), started
 
     def _throttle(self, grade: str) -> None:

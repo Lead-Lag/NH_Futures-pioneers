@@ -101,7 +101,9 @@ def summarize_run(folder: Path | str) -> Path:
     L.append("\n## 신호와 주문\n")
     taken = [s for s in signals if s.get("taken") == "1"]
     L.append(f"- 진입 신호 {len(signals)}건 중 진입 {len(taken)}건")
-    blocked = Counter((s.get("blocked_by") or "").split(" ")[0] for s in signals if s.get("taken") != "1")
+    import re
+    blocked = Counter(re.split(r"[\d(]", s.get("blocked_by") or "")[0].strip() or "기타"
+                      for s in signals if s.get("taken") != "1")
     for k, v in blocked.most_common():
         L.append(f"  - 보류: {k} {v}건")
     st = Counter(o.get("status") for o in orders)
@@ -128,7 +130,7 @@ def summarize_run(folder: Path | str) -> Path:
             L.append("\n오류 코드: " + ", ".join(f"`{k}` {v}건" for k, v in errs.items()))
 
     ev = Counter(e["kind"] for e in events)
-    notable = {k: ev[k] for k in ("api_error", "gap", "mismatch", "unfilled", "order_unknown", "order_failed", "warning", "risk") if ev.get(k)}
+    notable = {k: ev[k] for k in ("api_error", "gap", "pause", "mismatch", "unfilled", "order_unknown", "order_failed", "warning", "risk") if ev.get(k)}
     L.append("\n## 주의 이벤트\n")
     L.append(", ".join(f"{k} {v}건" for k, v in notable.items()) if notable else "없음")
     for e in events:

@@ -41,6 +41,15 @@ class Params:
     tick_size: float = 0.1  # 원
     tick_value: int = 1_000  # 원 (0.1원 × 10,000달러)
     fee_per_contract: float = 0.0  # 원, 편도
+    # ---- 선택 규칙 (기본값 = 꺼짐 → 기존 동작 그대로). 데이터로 비교한 뒤 켤지 정합니다.
+    min_reward_ticks: float = 0  # 신호 봉 종가→중심선 거리(틱)가 이보다 작으면 진입 안 함 (0=끔)
+    trend_ma_period: int = 0  # 추세 필터용 긴 이동평균 봉 수 (0=끔)
+    trend_slope_bars: int = 10  # 긴 이동평균 기울기를 몇 봉 전과 비교할지
+    trend_max_slope_ticks: float = 3  # 기울기가 이 틱보다 가파르면 역방향 진입 막음
+    stop_mode: str = "fixed"  # fixed: 체결가±stop_ticks / swing: 신호 직전 극값 너머 + stop_buffer_ticks
+    stop_buffer_ticks: int = 1
+    stop_min_ticks: int = 3  # swing 손절 거리 하한·상한(틱)
+    stop_max_ticks: int = 8
 
     @property
     def multiplier(self) -> float:
@@ -96,6 +105,9 @@ class Engine:
         self.p = params
         self.j = journal
         self.closes: deque[float] = deque(maxlen=params.bb_period)
+        self.long_closes: deque[float] = deque(maxlen=max(params.trend_ma_period, 1))
+        self.long_ma_hist: deque[float] = deque(maxlen=max(params.trend_slope_bars, 1) + 1)
+        self.prev_bar: dict[str, Any] | None = None
         self.prev: dict[str, float] | None = None  # 직전 봉 {close, mid, upper, lower}
         self.day = None
         self.position = 0  # +qty 매수, −qty 매도
@@ -116,6 +128,9 @@ class Engine:
     def _new_day(self, d) -> None:
         self.day = d
         self.closes.clear()
+        self.long_closes.clear()
+        self.long_ma_hist.clear()
+        self.prev_bar = None
         self.prev = None
         self.daily_pnl = 0.0
         self.daily_trades = 0
@@ -126,7 +141,14 @@ class Engine:
 
     @property
     def stop_amount(self) -> float:
-        return self.p.stop_ticks * self.p.tick_value * self.p.qty + 2 * self.p.fee_per_contract * self.p.qty
+        ticks = self.p.stop_max_ticks if self.p.stop_mode == "swing" else self.p.stop_ticks
+        return ticks * self.p.tick_value * self.p.qty + 2 * self.p.fee_per_contract * self.p.qty
+
+    def _slope_ticks(self) -> float | None:
+        """긴 이동평균이 trend_slope_bars 봉 동안 움직인 틱 수. 준비 전이면 None."""
+        if self.p.trend_ma_period <= 0 or len(self.long_ma_hist) <= self.p.trend_slope_bars:
+            return None
+        return (self.long_ma_hist[-1] - self.long_ma_hist[0]) / self.p.tick_size
 
     # ---------------------------------------------------------------- 봉 마감
     def on_bar_close(self, bar: dict[str, Any]) -> Intent | None:
@@ -137,6 +159,11 @@ class Engine:
 
         close = float(bar["close"])
         self.closes.append(close)
+        if self.p.trend_ma_period > 0:
+            self.long_closes.append(close)
+            if len(self.long_closes) == self.p.trend_ma_period:
+                self.long_ma_hist.append(sum(self.long_closes) / self.p.trend_ma_period)
+        prev_bar, self.prev_bar = self.prev_bar, bar
         cur: dict[str, float] | None = None
         if len(self.closes) == self.p.bb_period:
             mid, up, low = bollinger(list(self.closes), self.p.bb_k)
@@ -185,12 +212,18 @@ class Engine:
             return None
 
         width_ticks = round((cur["upper"] - cur["lower"]) / self.p.tick_size, 1)
+        reward_ticks = round(abs(cur["mid"] - close) / self.p.tick_size, 1)
+        slope = self._slope_ticks()
+        lows = [float(bar["low"])] + ([float(prev_bar["low"])] if prev_bar else [])
+        highs = [float(bar["high"])] + ([float(prev_bar["high"])] if prev_bar else [])
+        swing = min(lows) if side == BUY else max(highs)  # 이탈했다 돌아온 두 봉의 극값
         snap = {
             **{k: round(v, 4) for k, v in cur.items()},
             "prev_close": prev["close"], "prev_upper": round(prev["upper"], 4), "prev_lower": round(prev["lower"], 4),
-            "width_ticks": width_ticks,
+            "width_ticks": width_ticks, "reward_ticks": reward_ticks,
+            "slope_ticks": "" if slope is None else round(slope, 1), "swing": swing,
         }
-        blocked = self._entry_block(end, width_ticks)
+        blocked = self._entry_block(end, width_ticks, side, reward_ticks, slope)
         self.j.signal(
             {
                 "ts": end.isoformat(), "bar_start": start.isoformat(), "signal": purpose, "reason": why,
@@ -202,7 +235,8 @@ class Engine:
         self.pending = Intent(next(_ids), end, side, self.p.qty, purpose, why, close, snap)
         return self.pending
 
-    def _entry_block(self, end: datetime, width_ticks: float) -> str:
+    def _entry_block(self, end: datetime, width_ticks: float, side: str = BUY,
+                     reward_ticks: float = 0.0, slope: float | None = None) -> str:
         t = end.time()
         if self.halted:
             return f"중지:{self.halted}"
@@ -210,6 +244,15 @@ class Engine:
             return "진입시간 밖"
         if width_ticks < self.p.min_band_width_ticks:
             return f"밴드폭 {width_ticks}틱 < {self.p.min_band_width_ticks}"
+        if self.p.min_reward_ticks and reward_ticks < self.p.min_reward_ticks:
+            return f"중심선까지 {reward_ticks}틱 < {self.p.min_reward_ticks}"
+        if self.p.trend_ma_period > 0:
+            if slope is None:
+                return "추세 이동평균 준비 중"
+            if side == BUY and slope < -self.p.trend_max_slope_ticks:
+                return f"하락 추세(기울기 {slope:.1f}틱) — 매수 막음"
+            if side == SELL and slope > self.p.trend_max_slope_ticks:
+                return f"상승 추세(기울기 {slope:.1f}틱) — 매도 막음"
         if self.cooldown > 0:
             return f"손절 뒤 대기 {self.cooldown}봉"
         if self.daily_trades >= self.p.max_trades_per_day:
@@ -253,7 +296,7 @@ class Engine:
             self.entry_price = price
             self.entry_time = ts
             self.held_bars = 0
-            self.stop_price = round(price - d * self.p.stop_ticks * self.p.tick_size, 4)
+            self.stop_price = self._stop_for(intent, price, d)
             self.daily_trades += 1
             self.j.event("position", f"{'매수' if d > 0 else '매도'} {qty}계약 보유 @ {price:.1f}, 손절가 {self.stop_price:.1f}")
             return
@@ -292,6 +335,15 @@ class Engine:
         if self.daily_pnl <= -self.p.daily_loss_limit:
             self.halted = "일일 손실 한도 도달"
             self.j.event("risk", f"일일 손실 {self.daily_pnl:,.0f}원 — 오늘 신규 진입 중지")
+
+    def _stop_for(self, intent: Intent, price: float, d: int) -> float:
+        t = self.p.tick_size
+        if self.p.stop_mode == "swing" and intent.snapshot.get("swing") not in (None, ""):
+            raw = float(intent.snapshot["swing"]) - d * self.p.stop_buffer_ticks * t
+            dist = (price - raw) * d / t  # 체결가에서 손절가까지 틱
+            dist = min(max(dist, self.p.stop_min_ticks), self.p.stop_max_ticks)
+            return round(price - d * round(dist) * t, 4)
+        return round(price - d * self.p.stop_ticks * t, 4)
 
     def on_order_failed(self, intent: Intent, reason: str) -> None:
         self.pending = None

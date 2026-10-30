@@ -24,7 +24,7 @@ COLUMNS = {
     "bars": ["start", "open", "high", "low", "close", "volume", "mid", "upper", "lower", "position", "warmup"],
     "signals": [
         "ts", "bar_start", "signal", "reason", "close", "mid", "upper", "lower",
-        "prev_close", "prev_upper", "prev_lower", "width_ticks", "taken", "blocked_by",
+        "prev_close", "prev_upper", "prev_lower", "width_ticks", "reward_ticks", "slope_ticks", "swing", "taken", "blocked_by",
     ],
     "orders": [
         "intent_id", "intent_ts", "purpose", "side", "qty", "order_type", "reason", "ref_price",
