@@ -1,5 +1,0 @@
-config.local.json
-.token_cache.json
-__pycache__/
-*.pyc
-results/backtest_synthetic_*/
