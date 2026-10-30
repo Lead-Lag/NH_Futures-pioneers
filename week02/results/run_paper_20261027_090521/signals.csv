@@ -1,0 +1,2 @@
+﻿ts,bar_start,signal,reason,close,mid,upper,lower,prev_close,prev_upper,prev_lower,width_ticks,reward_ticks,slope_ticks,swing,taken,blocked_by
+2026-10-27T09:09:00+09:00,2026-10-27T09:08:00+09:00,ENTRY_LONG,하단밴드 이탈 뒤 복귀,1323.8,1324.6,1325.523,1323.677,1323.6,1325.4835,1323.7765,18.5,8.0,,1323.4,1,
