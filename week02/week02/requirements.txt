@@ -1,2 +1,0 @@
-requests>=2.31
-matplotlib>=3.7   # 선택: summary 의 chart.png

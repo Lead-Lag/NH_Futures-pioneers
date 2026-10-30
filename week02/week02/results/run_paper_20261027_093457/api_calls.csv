@@ -1,3 +1,0 @@
-﻿ts,api,http_status,latency_ms,error_code,message
-2026-10-27T09:35:07.345+09:00,domestic_price,,10063.1,TIMEOUT,"HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=10.0)"
-2026-10-27T09:35:07.479+09:00,domestic_open-interest,200,132.8,,

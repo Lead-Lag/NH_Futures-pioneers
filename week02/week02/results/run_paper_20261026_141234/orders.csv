@@ -1,3 +1,0 @@
-﻿intent_id,intent_ts,purpose,side,qty,order_type,reason,ref_price,sent_ts,ord_no,status,filled_qty,avg_price,message
--1,2026-10-26T14:12:39.884426+09:00,SMOKE_TEST,BUY,1,시장가 FAS,주문 API 왕복 확인,0.0,2026-10-26T14:12:39.884+09:00,0000001610,체결,1,1320.8,
--2,2026-10-26T14:12:39.884426+09:00,SMOKE_TEST,SELL,1,시장가 FAS,주문 API 왕복 확인,0.0,2026-10-26T14:12:40.736+09:00,0000001611,체결,1,1320.6,

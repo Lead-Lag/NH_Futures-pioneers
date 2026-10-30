@@ -1,3 +1,0 @@
-﻿intent_id,ord_no,ts,purpose,side,qty,price,ref_price,slippage_ticks,source
-1,0000001637,2026-10-26T14:17:04.581+09:00,ENTRY_SHORT,SELL,1,1321.3,1321.3,-0.0,paper_account
-2,0000001697,2026-10-26T14:35:39.554+09:00,EXIT_TP,BUY,1,1321.0,1321.2,-2.0,paper_account
