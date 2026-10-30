@@ -39,6 +39,7 @@ def main() -> int:
     ap.add_argument("--config", default=str(HERE / "config.local.json"))
     ap.add_argument("--strategy", default=str(HERE / "strategy_config.json"))
     ap.add_argument("--poll", type=float, default=2.0, help="현재가 조회 간격(초)")
+    ap.add_argument("--timeout", type=float, default=10.0, help="API 응답을 기다리는 최대 시간(초)")
     ap.add_argument("--until", default="15:40", help="이 시각에 종료(KST)")
     ap.add_argument("--run-minutes", type=float, default=0, help="0 이 아니면 이 시간만 돌고 종료(시험용)")
     ap.add_argument("--smoke-order", action="store_true", help="시작 직후 매수1→매도1 주문 왕복으로 API 확인(paper 모드)")
@@ -56,7 +57,7 @@ def main() -> int:
     run_id = f"run_{args.mode}_{started:%Y%m%d_%H%M%S}"
     j = RunJournal(Path(args.results) / run_id)
     creds = load_credentials(args.config, env)
-    client = NHClient(creds, token_cache=HERE / ".token_cache.json", call_logger=j.api_call)
+    client = NHClient(creds, token_cache=HERE / ".token_cache.json", call_logger=j.api_call, timeout=args.timeout)
     broker = (PaperBroker if args.mode == "paper" else SimBroker)(client, args.symbol, j, params.tick_size)
     eng = Engine(params, j)
 
@@ -157,9 +158,15 @@ def _loop(args, client, broker, eng: Engine, p: Params, j: RunJournal, last_star
     bar = timedelta(minutes=p.bar_minutes)
     due = (last_start + 2 * bar if last_start else _next_boundary(datetime.now(KST), p.bar_minutes)) + timedelta(seconds=GRACE_SEC)
     errors = 0
+    last_loop = datetime.now(KST)
 
     while True:
         now = datetime.now(KST)
+        if now - last_loop > timedelta(seconds=60):
+            # 10/29: PC 가 09:27~13:13 멈춘 뒤 깨어나며 밀린 봉으로 18초 동안 7번 사고팜 → 공백을 알리고 아래에서 밀린 봉은 거래에 쓰지 않음
+            j.event("pause", f"실행이 {(now - last_loop).total_seconds() / 60:.1f}분 멈췄다가 다시 돎 "
+                             f"({last_loop:%H:%M:%S}→{now:%H:%M:%S}, PC 절전·네트워크 끊김 추정)")
+        last_loop = now
         if now >= stop_at or now >= until:
             j.event("state", "종료 시각 도달")
             return
@@ -174,10 +181,21 @@ def _loop(args, client, broker, eng: Engine, p: Params, j: RunJournal, last_star
 
                 bars = sorted((b for b in (parse_bar(r, now.strftime("%Y%m%d")) for r in rows) if b), key=lambda b: b["start"])
                 fresh = [b for b in bars if (last_start is None or b["start"] > last_start) and b["start"] + bar <= now - timedelta(seconds=1)]
+                # 마감된 지 「한 봉 + 30초」가 넘은 봉은 밀린 봉입니다. 그 봉의 신호는 이미 지난 가격이라
+                # 지금 주문하면 규칙과 다른 거래가 됩니다 → 지표만 갱신하고 주문하지 않습니다.
+                stale = [b for b in fresh if b["start"] + 2 * bar < now - timedelta(seconds=30)]
+                if stale:
+                    j.event("gap", f"밀린 봉 {len(stale)}개({stale[0]['start']:%H:%M}~{stale[-1]['start']:%H:%M})는 "
+                                   "지표만 갱신하고 주문하지 않음")
                 for b in fresh:
                     if last_start and b["start"] - last_start > bar:
                         j.event("gap", f"봉 공백: {last_start:%H:%M} 다음이 {b['start']:%H:%M}")
                     last_start = b["start"]
+                    if b in stale:
+                        eng.warmup = True
+                        eng.on_bar_close(b)
+                        eng.warmup = False
+                        continue
                     _do(broker, client, eng, eng.on_bar_close(b), args, j)
                 if fresh:
                     due = last_start + 2 * bar + timedelta(seconds=GRACE_SEC)
