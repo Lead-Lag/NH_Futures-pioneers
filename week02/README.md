@@ -71,8 +71,6 @@ Windows 11 에서는 Microsoft Store 의 공식 Python 3.13 을 썼습니다. `u
 
 ```powershell
 # Windows PowerShell — 그 창에서만 유효
-$env:NH_APP_KEY = "발급받은 APP Key"
-$env:NH_APP_SECRET = "발급받은 APP Secret"
 python run_live.py --mode paper --smoke-order --run-minutes 1
 ```
 발급받은 접근 토큰은 `.token_cache.json` 에 만료 시각과 함께 저장해 다시 켤 때 재사용합니다(인증 호출 줄이기, 이 파일도 올리지 않음).
