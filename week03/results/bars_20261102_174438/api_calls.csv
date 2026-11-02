@@ -1,0 +1,3 @@
+ts,api,http,latency_ms,ok,code,message
+2026-11-02T17:44:38.926,chart-minute,400,76,0,EMG_001,[FHKE:]종목을 찾을수 없습니다. [PIBO7502@fts]
+2026-11-02T17:44:39.003,chart-minute,400,32,0,EMG_001,[FHKE:]종목을 찾을수 없습니다. [PIBO7502@fts]

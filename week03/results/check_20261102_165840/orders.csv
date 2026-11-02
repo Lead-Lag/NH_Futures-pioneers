@@ -1,0 +1,3 @@
+ts,sym,side,ord_no,status,exec_price,exec_qty
+2026-11-02T16:58:44.110065,SFCX26,buy,,REJECTED 00000,,주문이 정상처리 되었습니다.
+2026-11-02T16:58:48.257178,MHIX26,buy,,REJECTED 7032,,[HKEX] 거래소는 [시장가] 주문을 지원하지 않습니다.
