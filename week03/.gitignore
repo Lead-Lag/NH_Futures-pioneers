@@ -1,0 +1,9 @@
+# 접근 토큰 캐시 — 발급받은 PC·IP 에서만 쓰는 값이라 올리지 않음
+.token_cache*
+
+# 키를 넣는 로컬 설정 파일
+config.local.json
+
+# 파이썬 실행 캐시
+__pycache__/
+*.pyc
