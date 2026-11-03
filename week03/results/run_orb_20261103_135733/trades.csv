@@ -1,0 +1,3 @@
+product,session,side,entry_ts,entry,stop,target,exit_ts,exit,reason,ticks,pnl,currency,pnl_krw,hold_min
+SFC,pm,short,2026-11-03T14:31:04,12727.0,12753.0,12688.0,2026-11-03T14:36:14,12756.0,stop,-29,-29.0,USD,-38889,5.2
+MHI,pm,short,2026-11-03T14:45:07,23456.0,23483.0,23415.5,2026-11-03T15:02:24,23415.0,target,41,410.0,HKD,70233,17.3

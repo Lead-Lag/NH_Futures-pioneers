@@ -1,0 +1,45 @@
+{
+  "started": "2026-11-03T13:45:46.132658",
+  "env": "paper",
+  "products": {
+    "SFC": {
+      "product": "SFC",
+      "exchange": "SGX",
+      "name": "FTSE China A50",
+      "currency": "USD",
+      "hours_1": "10:00 ~ 17:35",
+      "hours_2": "18:00 ~ 06:15",
+      "hours_next": "00:00 ~ 00:00",
+      "settle_time": "17:35:00 ~ 17:35:00",
+      "tick_size": 1.0,
+      "tick_value": 1.0,
+      "contract_unit": 1.0,
+      "exch_cd": "FSGX",
+      "symbol": "SFCX26",
+      "symbol_name": "FTSE China A50",
+      "last_price": "12785.00",
+      "price_time": "134529",
+      "checked_at": "2026-11-03T13:45:47.187969"
+    },
+    "MHI": {
+      "product": "MHI",
+      "exchange": "HKEX",
+      "name": "Mini Hang Seng Index",
+      "currency": "HKD",
+      "hours_1": "10:15 ~ 13:00",
+      "hours_2": "14:00 ~ 17:30",
+      "hours_next": "18:15 ~ 04:00",
+      "settle_time": "17:30:00 ~ 17:30:00",
+      "tick_size": 1.0,
+      "tick_value": 10.0,
+      "contract_unit": 10.0,
+      "exch_cd": "FHKE",
+      "symbol": "MHIX26",
+      "symbol_name": "Mini Hang Seng Index",
+      "last_price": "23506",
+      "price_time": "125959",
+      "checked_at": "2026-11-03T13:45:48.243995"
+    }
+  },
+  "finished": "2026-11-03T13:45:48.244034"
+}
