@@ -1,0 +1,6 @@
+{"ts": "2026-11-03T10:30:47", "kind": "start", "product": "SFC", "symbol": "SFCX26", "exch_cd": "FSGX", "tick": 1.0, "tick_value": 1.0, "currency": "USD", "position": 0}
+{"ts": "2026-11-03T10:30:48", "kind": "start", "product": "MHI", "symbol": "MHIX26", "exch_cd": "FHKE", "tick": 1.0, "tick_value": 10.0, "currency": "HKD", "position": 0}
+{"ts": "2026-11-03T10:30:48", "kind": "plan", "sessions": ["am"], "products": ["SFC", "MHI"], "ends_at": "125700"}
+{"ts": "2026-11-03T12:57:01", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-03T12:57:01", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-03T12:57:01", "kind": "end", "out": "results\\run_orb_20261103_103046"}

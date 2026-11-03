@@ -1,0 +1,5 @@
+ts,product,session,purpose,side,ord_no,how,status,fill_price,fill_qty,ref_price,slip_ticks,latency_ms,source
+2026-11-03T14:31:03,SFC,pm,entry,sell,0000000646,market,6,12727.0,0000001,12727.0,-0.0,958,paper_account
+2026-11-03T14:36:14,SFC,pm,exit_stop,buy,0000000650,market,6,12754.0,0000001,12753.0,1.0,937,paper_account
+2026-11-03T14:45:07,MHI,pm,entry,sell,0000000655,limit 23452,6,23456.0,0000001,23459.0,3.0,988,paper_account
+2026-11-03T15:02:25,MHI,pm,exit_target,buy,0000000662,limit 23418,6,23415.0,0000001,23415.5,-0.5,1075,paper_account

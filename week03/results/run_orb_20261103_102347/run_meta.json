@@ -1,0 +1,73 @@
+{
+  "run_id": "run_orb_20261103_102347",
+  "started": "2026-11-03T10:23:47.782050",
+  "mode": "dry-run",
+  "env": "paper",
+  "rule": {
+    "k": 2.0,
+    "m": 1.5,
+    "range_min": 15,
+    "atr_n": 14,
+    "min_stop_ticks": 2,
+    "min_range_ticks": 8
+  },
+  "sessions": {
+    "am": {
+      "open_t": "103000",
+      "last_entry": "112900"
+    }
+  },
+  "products": {
+    "SFC": {
+      "product": "SFC",
+      "exchange": "SGX",
+      "name": "FTSE China A50",
+      "currency": "USD",
+      "hours_1": "10:00 ~ 17:35",
+      "hours_2": "18:00 ~ 06:15",
+      "hours_next": "00:00 ~ 00:00",
+      "settle_time": "17:35:00 ~ 17:35:00",
+      "tick_size": 1.0,
+      "tick_value": 1.0,
+      "contract_unit": 1.0,
+      "exch_cd": "FSGX",
+      "symbol": "SFCX26",
+      "symbol_name": "FTSE China A50",
+      "tick": 1.0,
+      "session_start": "100000",
+      "exit": {
+        "am": "122500",
+        "pm": "155500"
+      }
+    },
+    "MHI": {
+      "product": "MHI",
+      "exchange": "HKEX",
+      "name": "Mini Hang Seng Index",
+      "currency": "HKD",
+      "hours_1": "10:15 ~ 13:00",
+      "hours_2": "14:00 ~ 17:30",
+      "hours_next": "18:15 ~ 04:00",
+      "settle_time": "17:30:00 ~ 17:30:00",
+      "tick_size": 1.0,
+      "tick_value": 10.0,
+      "contract_unit": 10.0,
+      "exch_cd": "FHKE",
+      "symbol": "MHIX26",
+      "symbol_name": "Mini Hang Seng Index",
+      "tick": 1.0,
+      "session_start": "101500",
+      "exit": {
+        "am": "125500",
+        "pm": "165500"
+      }
+    }
+  },
+  "poll_sec": 5.0,
+  "fx": {
+    "USDKRW": 0.0,
+    "HKDKRW": 0.0
+  },
+  "python": "3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)]",
+  "finished": "2026-11-03T10:24:01.662538"
+}
