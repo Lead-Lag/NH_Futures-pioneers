@@ -123,7 +123,7 @@ class Journal:
     def __init__(self, out: Path, clock: Clock):
         self.out, self.clock = out, clock
         out.mkdir(parents=True, exist_ok=True)
-        self.ev = open(out / "events.jsonl", "a", encoding="utf-8")
+        self.ev = open(out / "events.jsonl", "a", encoding="utf-8") #사건 기록용 events.jsonl을 이어쓰기모드("a")로 열겠다
         self.files = {}
         self.cols = {
             "signals": ["ts", "product", "session", "signal_t", "side", "close", "range_hi", "range_lo",
@@ -134,13 +134,15 @@ class Journal:
                        "exit", "reason", "ticks", "pnl", "currency", "pnl_krw", "hold_min"],
         }
 
-    def event(self, kind: str, **kw) -> None:
+    def event(self, kind: str, **kw) -> None: # 사건 기록
         rec = {"ts": self.clock.now().isoformat(timespec="seconds"), "kind": kind, **kw}
         self.ev.write(json.dumps(rec, ensure_ascii=False, default=str) + "\n")
         self.ev.flush()
         print(f"{self.clock.now():%H:%M:%S}  [{kind}] " + " ".join(f"{k}={v}" for k, v in kw.items()), flush=True)
-
-    def row(self, name: str, **kw) -> None:
+        ##j.event("entered", product = "SFC", entry = 15000) 이렇게 호출하면
+        ## 현재 시각과 함께 events.jsonl에 한 줄 추가
+        ## {"ts": "2026-11-03T10:46:02", "kind": "entered", "product": "SFC", "entry": 15000}
+    def row(self, name: str, **kw) -> None: ##표 형태의 CSV를 기록하겠다
         if name not in self.files:
             path = self.out / f"{name}.csv"
             new = not path.exists()
@@ -158,11 +160,11 @@ class Journal:
 class Runner:
     def __init__(self, a, api: OverseasClient | None, clock: Clock, j: Journal):
         self.a, self.api, self.clock, self.j = a, api, clock, j
-        self.info: dict[str, dict] = {}
-        self.bars: dict[str, list[dict]] = {}
-        self.seen_bar: dict[str, str] = {}
-        self.state: dict[tuple[str, str], dict] = {}
-        self.fx = {"USD": a.usdkrw, "HKD": a.hkdkrw}
+        self.info: dict[str, dict] = {} #종목별 거래소, 계약 정보
+        self.bars: dict[str, list[dict]] = {} #종목별 분봉 데이터
+        self.seen_bar: dict[str, str] = {} #이미 처리하거나 기록한 봉 정보
+        self.state: dict[tuple[str, str], dict] = {} #종목 세션별 대기,보유,종료 상태
+        self.fx = {"USD": a.usdkrw, "HKD": a.hkdkrw} #원화 환산용 환율
 
     # 시세
     def refresh_bars(self, prd: str) -> list[dict]:
@@ -394,16 +396,24 @@ def main() -> None:
     clock = Clock(a.test_at, a.speed)
     products = [p.strip() for p in a.products.split(",") if p.strip()]
     sessions = [s.strip() for s in a.sessions.split(",") if s.strip()]
-    out = Path("results") / f"run_orb_{datetime.now():%Y%m%d_%H%M%S}"
+    out = Path("results") / f"run_orb_{datetime.now():%Y%m%d_%H%M%S}"  #result파일 경로 
     j = Journal(out, clock)
     api = OverseasClient("paper", *keys_from_env(), out, base_url=a.base_url)
     r = Runner(a, api, clock, j)
 
+    ## 이번 실행의 설정과 환경을 기록하기 위한 딕셔너리
+    ## run_id: 결과 폴더 이름. 이번 실행을 구분하는 ID
+    ## rule: ATR배수, 범위 길이 등 RULE의 전략설정
+    ## sessions: 이번에 선택한 세션의 시간 설정
+    ## products: 종목 정보를 나중에 채울 빈 딕셔너리
+    ## poll_sec: 현재가 조회 간격
+    ## fx: 원화 환산에 사용할 USD HKD 환율
     meta = dict(run_id=out.name, started=clock.now().isoformat(), mode="dry-run" if a.dry_run else "paper",
                 env="paper", rule=RULE, sessions={s: SESSIONS[s] for s in sessions}, products={},
                 poll_sec=a.poll, fx={"USDKRW": a.usdkrw, "HKDKRW": a.hkdkrw}, python=os.sys.version)
+    
     for prd in products:
-        info = product_info(api, prd)
+        info = product_info(api, prd) #api: OverseasClient 객체. prd: 조회할 상품코드. "SFC" 또는 "MHI"
         exch_cd, sym, row = resolve_front(api, prd, info.get("exchange", ""))
         info.update(exch_cd=exch_cd, symbol=sym, symbol_name=row.get("occurs1_sym_nm", "").strip())
         r.info[prd] = info
