@@ -38,6 +38,7 @@ PRODUCTS = {
 SESSIONS = {"am": dict(open_t="103000", last_entry="112900"),
             "pm": dict(open_t="140000", last_entry="145900")}
 STALE_SEC = 90   # 마감된 지 이보다 오래된 봉으로는 주문하지 않음 (2주차 10/29 교훈)
+MAX_BAR_PAGES = 10 # 분봉 응답은 최신 봉부터 한 쪽씩 옴 → 세션 시작 봉까지 연속조회
 
 
 # ── 시계 (시험용 가상 시계: --test-at HH:MM --speed N) ──────────
@@ -170,13 +171,22 @@ class Runner:
     def refresh_bars(self, prd: str) -> list[dict]:
         info, now = self.info[prd], self.clock.now()
         today = now.strftime("%Y%m%d")
-        body = self.api.chart_minute(info["exch_cd"], info["symbol"], today, today)
-        rows = body.get("Occurs1") or []
-        out = []
+        rows, key = [], "99999999"
+        for _ in range(MAX_BAR_PAGES):
+            body = self.api.chart_minute(info["exch_cd"], info["symbol"], today, today, next_key=key)
+            page = body.get("Occurs1") or []
+            rows += page
+            oldest = min((str(r.get("occurs1_exch_tm")).strip().zfill(6) for r in page
+                          if str(r.get("occurs1_ref_dt")).strip() == today), default="000000")
+            key = str(body.get("nxt_key") or "").strip()
+            if not page or oldest <= PRODUCTS[prd]["session_start"] or not key or set(key) == {"9"}:
+                break
+        out, seen = [], set()
         for r in rows:
             d, t = str(r.get("occurs1_ref_dt")).strip(), str(r.get("occurs1_exch_tm")).strip().zfill(6)
-            if d != today or t < PRODUCTS[prd]["session_start"]:
+            if d != today or t < PRODUCTS[prd]["session_start"] or t in seen:
                 continue
+            seen.add(t)
             start = datetime.strptime(d + t, "%Y%m%d%H%M%S")
             if start + timedelta(minutes=1) > now:   # 진행 중인 봉 제외
                 continue
@@ -296,9 +306,11 @@ class Runner:
                 continue
             row["side"] = "long" if sig["side"] == 1 else "short"
             if age > STALE_SEC:
-                self.j.row("signals", **row, action="ignored", reason=f"stale_bar_{int(age)}s")
-                self.j.event("stale_signal_ignored", product=prd, session=ses, bar=b["t"], age_s=int(age))
-                continue
+                # 첫 돌파 봉을 제때 못 봤으면(실행 멈춤 등) 그 세션은 거래하지 않음 — 뒤 봉으로 들어가면 규칙과 달라짐
+                self.j.row("signals", **row, action="skip_session", reason=f"stale_bar_{int(age)}s")
+                self.j.event("missed_first_signal", product=prd, session=ses, bar=b["t"], age_s=int(age))
+                st["phase"] = "done"
+                return
             self.j.row("signals", **row, action="enter", reason="")
             self.enter(prd, ses, sig, b)
             return
@@ -433,7 +445,7 @@ def main() -> None:
     last_loop, errors = time.time(), 0
     try:
         while hms(clock.now()) < end_t:
-            gap = (time.time() - last_loop) * clock.speed
+            gap = time.time() - last_loop   # 실제 시간 기준(시험용 배속과 무관)
             if gap > 60:
                 j.event("pause", seconds=int(gap), note="실행이 멈췄다가 다시 돎")
             last_loop = time.time()

@@ -1,0 +1,11 @@
+{"ts": "2026-11-03T13:57:34", "kind": "start", "product": "SFC", "symbol": "SFCX26", "exch_cd": "FSGX", "tick": 1.0, "tick_value": 1.0, "currency": "USD", "position": 0}
+{"ts": "2026-11-03T13:57:35", "kind": "start", "product": "MHI", "symbol": "MHIX26", "exch_cd": "FHKE", "tick": 1.0, "tick_value": 10.0, "currency": "HKD", "position": 0}
+{"ts": "2026-11-03T13:57:35", "kind": "plan", "sessions": ["pm"], "products": ["SFC", "MHI"], "ends_at": "165700"}
+{"ts": "2026-11-03T14:31:04", "kind": "entered", "product": "SFC", "session": "pm", "side": -1, "entry": 12727.0, "stop": 12753.0, "target": 12688.0}
+{"ts": "2026-11-03T14:31:04", "kind": "reconcile_ok", "product": "SFC", "position": -1}
+{"ts": "2026-11-03T14:36:14", "kind": "exited", "product": "SFC", "session": "pm", "reason": "stop", "exit": 12756.0, "ticks": -29, "pnl": "-29.0 USD"}
+{"ts": "2026-11-03T14:36:14", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-03T14:45:07", "kind": "entered", "product": "MHI", "session": "pm", "side": -1, "entry": 23456.0, "stop": 23483.0, "target": 23415.5}
+{"ts": "2026-11-03T14:45:07", "kind": "reconcile_ok", "product": "MHI", "position": -1}
+{"ts": "2026-11-03T15:02:24", "kind": "exited", "product": "MHI", "session": "pm", "reason": "target", "exit": 23415.0, "ticks": 41, "pnl": "410.0 HKD"}
+{"ts": "2026-11-03T15:02:24", "kind": "reconcile_ok", "product": "MHI", "position": 0}
