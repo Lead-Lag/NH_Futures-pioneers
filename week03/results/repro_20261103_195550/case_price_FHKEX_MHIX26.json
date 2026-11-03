@@ -1,0 +1,48 @@
+{
+  "case": "price_FHKEX_MHIX26",
+  "sent_at": "2026-11-03T19:55:51",
+  "env": "paper",
+  "url": "https://apidemo.futures.co.kr/trade/v1/overseas/price",
+  "request": {
+    "Iccurs1": [
+      {
+        "iccurs1_exch_cd": "FHKEX",
+        "iccurs1_sym": "MHIX26"
+      }
+    ]
+  },
+  "http_status": 200,
+  "response": {
+    "Occurs1": [
+      {
+        "occurs1_sym": "",
+        "occurs1_high_pric": "",
+        "occurs1_last_pric": "",
+        "occurs1_rt": "",
+        "occurs1_life_high_dt": "",
+        "occurs1_sett_pric": "",
+        "occurs1_life_low_dt": "",
+        "occurs1_ris_trd_qty": "",
+        "occurs1_fal_trd_qty": "",
+        "occurs1_life_high_pric": "",
+        "occurs1_pre_close_pric": "",
+        "occurs1_biz_dt": "",
+        "occurs1_cum_trd_qty": "",
+        "occurs1_open_pric": "",
+        "occurs1_low_pric": "",
+        "occurs1_ask_pric": "",
+        "occurs1_diff_rt": "",
+        "occurs1_sym_nm": "",
+        "occurs1_life_low_pric": "",
+        "occurs1_exch_cd": "",
+        "occurs1_bid_pric": "",
+        "occurs1_trd_tm": "",
+        "occurs1_real_sym": "",
+        "occurs1_ask_qty": "",
+        "occurs1_bid_qty": "",
+        "occurs1_pre_sett_dy": ""
+      }
+    ],
+    "nrec": "1"
+  }
+}
