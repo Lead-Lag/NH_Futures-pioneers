@@ -42,6 +42,10 @@ SPECS = {
 # 등급별 최소 간격(초): 시세·계좌 초당 10건, 주문 초당 5건보다 여유 있게
 MIN_GAP = {"quote": 0.12, "account": 0.12, "order": 0.25}
 
+# "": 빈 문자열. 오류 코드가 없거나 비어 있는 경우를 허용
+# "0": 정상 처리 코드로 취급
+# "EGW002": 접근토큰이 성공적으로 발급되었다는 코드
+# "EGW013": 해당 날짜 범위 내 배치 목록이 조회되었다는 코드
 OK_CODES = {"", "0", "EGW002", "EGW013"}
 
 
@@ -64,7 +68,7 @@ def num(v: Any) -> float:
 
 def _ok_code(code: str) -> bool:
     # 주문 성공 응답이 err_cd "00000"(「주문이 정상처리 되었습니다」)로 옴 → 0 만으로 된 코드는 정상
-    return code in OK_CODES or set(code) == {"0"}
+    return code in OK_CODES or set(code) == {"0"} #code 문자열에 있는 문자들이 오직 0뿐인지 확인하겠다.
 
 
 def failure_of(api_id: str, body: Any) -> tuple[str, str] | None:
@@ -90,10 +94,10 @@ class OverseasClient:
         self.env, self.app_key, self.app_secret = env, app_key, app_secret
         self.base = base_url or BASE_URL[env]
         self.timeout = timeout
-        self.s = requests.Session()
-        self.token: str = ""
-        self.expires_at = datetime.min
-        self.last_issue = datetime.min
+        self.s = requests.Session()  ##HTTP통신세션
+        self.token: str = "" #처음에는 토큰이 없는 상태로 시작
+        self.expires_at = datetime.min #아직 발급받지 않았다는 초기값
+        self.last_issue = datetime.min #아직 발급받지 않았다는 초기값
         self.token_cache = token_cache or Path(f".token_cache_overseas_{env}.json")
         self.last_call: dict[str, float] = {}
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -108,17 +112,18 @@ class OverseasClient:
     # ── 토큰 ──────────────────────────────────────────────
     def _load_cache(self) -> None:
         try:
-            d = json.loads(self.token_cache.read_text(encoding="utf-8"))
-            if d.get("key_tail") == self.app_key[-4:]:
-                self.token = d["token"]
-                self.expires_at = datetime.fromisoformat(d["expires_at"])
-        except (OSError, ValueError, KeyError):
+            d = json.loads(self.token_cache.read_text(encoding="utf-8"))#read_text:파일 내용을 문자열로 읽음
+            #json.loads: JSON 문자열을 파이썬 딕셔너리로 변환
+            if d.get("key_tail") == self.app_key[-4:]: #문자열의 마지막 네 글자와 비교
+                self.token = d["token"] #토큰 저장
+                self.expires_at = datetime.fromisoformat(d["expires_at"]) #토큰 만료 시각 저장
+        except (OSError, ValueError, KeyError): #읽을 수 없으면 프로그램을 종료하지 않고 넘어간다
             pass
 
-    def _issue(self) -> None:
+    def _issue(self) -> None: 
         # 같은 키로 1분에 한 번만 (2주차 관찰 1: 만료 직전 반복 재발급 방지)
         if datetime.now() - self.last_issue < timedelta(minutes=1) and self.token:
-            return
+            return #마지막 발급 후 1분이 지나지 않았고 토큰도 있으면 바로 함수를 끝낸다
         t0 = time.time()
         try:
             r = self.s.post(self.base + TOKEN_PATH, timeout=self.timeout, data={
@@ -160,50 +165,53 @@ class OverseasClient:
         self._log_f.flush()
 
     def call(self, api_id: str, payload: dict[str, Any], retries: int = 0) -> dict[str, Any]:
+        #api_id: 호출할 API 이름
+        #payload: 서버에 보낼 요청 데이터
+        #retries: 응답이 없을 때 추가로 시도할 횟수. 기본 0회
         """retries: 조회 API 만 시간 초과 때 재시도. 주문은 반드시 0."""
-        path, grade = SPECS[api_id]
-        if grade == "order":
+        path, grade = SPECS[api_id] #API의 경로와 종류 찾기
+        if grade == "order": #주문API일 경우: call 함수의 재시도를 금지하겠다(중복주문 방지)
             retries = 0
         for attempt in range(retries + 1):
             try:
                 return self._call_once(api_id, path, grade, payload)
-            except NoResponse:
+            except NoResponse: #NoResponse의 경우 아래에 해당할 때 재시도한다.
                 if attempt >= retries:
                     raise
                 time.sleep(1.0 + attempt)
         raise AssertionError("unreachable")
 
     def _call_once(self, api_id, path, grade, payload, refreshed=False):
-        self._ensure_token()
+        self._ensure_token() ## 접근토큰이 있는지 확인한다
         gap = MIN_GAP[grade] - (time.time() - self.last_call.get(grade, 0))
         if gap > 0:
             time.sleep(gap)
-        self.last_call[grade] = time.time()
-        t0 = time.time()
+        self.last_call[grade] = time.time() #호출 간격 맞추기
+        t0 = time.time() #요청 소요시간을 측정하기 위한 시작 시각
         try:
             r = self.s.post(self.base + path, json=payload, timeout=self.timeout,
                             headers={"Authorization": f"Bearer {self.token}"})
         except requests.RequestException as e:
-            self._write(api_id, "", t0, False, "NO_RESPONSE", type(e).__name__)
+            self._write(api_id, "", t0, False, "NO_RESPONSE", type(e).__name__) #api_calls.csv에 오류 기록
             raise NoResponse(f"{api_id}: {e}") from e
         body = _json(r)
         fail = failure_of(api_id, body)
         token_problem = r.status_code == 401 or (fail and fail[0].startswith("EGW05"))
         if token_problem and not refreshed:
-            # 401·토큰 코드는 처리 전 거절 → 주문도 중복 없이 한 번만 다시
+            # 401·토큰 코드는 처리 전 거절 → 주문도 중복 없이 한 번만 다시(인증오류의 경우)
             self._write(api_id, r.status_code, t0, False, fail[0] if fail else "401", "token refresh")
             self.token, self.last_issue = "", datetime.min
             return self._call_once(api_id, path, grade, payload, refreshed=True)
-        if r.status_code >= 400 and not fail:
+        if r.status_code >= 400 and not fail: #나머지 HTTP 오류를 처리하고 결과 기록
             fail = (str(r.status_code), str(body)[:200])
         self._write(api_id, r.status_code, t0, fail is None, fail[0] if fail else "",
                     fail[1][:200] if fail else "")
-        if fail:
+        if fail: #실패하면 예외를 반환
             raise ApiFailure(api_id, fail[0], fail[1], body)
-        return body
+        return body #성공하면 본문을 반환, 자료형은 dict
 
     # ── 명세 함수 (요청 칸 이름은 명세 그대로) ─────────────
-    def price(self, exch_cd: str, sym: str) -> dict[str, Any]:
+    def price(self, exch_cd: str, sym: str) -> dict[str, Any]: #해외 현재가
         body = self.call("price", {"Iccurs1": [{"iccurs1_exch_cd": exch_cd, "iccurs1_sym": sym}]}, retries=2)
         rows = body.get("Occurs1") or []
         return rows[0] if rows else {}
@@ -222,6 +230,7 @@ class OverseasClient:
         return body.get("Occurs1") or []
 
     def market_operations(self, prd_cd: str = "", exch_cd: str = "") -> list[dict[str, Any]]:
+        # prd_cd: 상품 코드(ex. "SFC", "MHI"), exch_cd: 거래소 코드(ex."SGX", "HKEX")
         body = self.call("market-operations", {"fut_opt_div_cd": "", "prd_grp_cd": "",
                                                "exch_cd": exch_cd, "cur_cd": "", "prd_cd": prd_cd,
                                                "prd_nm": "", "nxt_key": ""}, retries=2)
@@ -270,18 +279,20 @@ class OverseasClient:
     def net_position(self, sym: str) -> int:
         """잔고의 순포지션(매수 +, 매도 −)."""
         net = 0
-        for r in self.open_interest():
+        for r in self.open_interest():  ##해외_잔고내역 API 호출
             if str(r.get("occurs1_sym") or "").strip() != sym:
                 continue
-            q = int(num(r.get("occurs1_opint_qty")))
-            net += q if str(r.get("occurs1_trd_tp")).strip() == "1" else -q
+            q = int(num(r.get("occurs1_opint_qty"))) ##미결제량
+            net += q if str(r.get("occurs1_trd_tp")).strip() == "1" else -q #매수매도 구분
         return net
 
 
 def _json(r: requests.Response) -> dict[str, Any]:
     try:
-        b = r.json()
+        b = r.json()  # 응답을 파이썬 객체로 변환
+        #서버의 JSON이 객체라면 dict, 배열이라면 list
         return b if isinstance(b, dict) else {"_raw": b}
+        # b가 딕셔너리면 그대로 return. 다른 자료형이면 {"_raw": b} 로 감싸서 반환
     except ValueError:
         return {"_text": r.text[:300]}
 

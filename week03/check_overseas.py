@@ -41,30 +41,44 @@ def candidates(prd: str, today: datetime, n: int = 3) -> list[str]:
 
 
 def product_info(api: OverseasClient, prd: str) -> dict:
-    info: dict = {"product": prd}
+    info: dict = {"product": prd} #":dict <- 타입 힌트"
     def pick(rows):
         return [r for r in rows if str(r.get("occurs1_prd_cd")).strip() == prd
-                and str(r.get("occurs1_fut_opt_div_cd")).strip() == "F"]
+                and str(r.get("occurs1_fut_opt_div_cd")).strip() == "F"] 
+        ## 해당 상품의 선물 행만 골라 리스트로 만들겠다
     try:
         ops = pick(api.market_operations(prd_cd=prd))
-        if not ops and prd in EXCH_HINT:
+        if not ops and prd in EXCH_HINT: #상품으로 먼저 조회하고, 결과가 없으면 해당 거래소로 조회
             ops = pick(api.market_operations(exch_cd=EXCH_HINT[prd]))
+            ## ops는 상품 한 행을 나타내는 dictionary가 들어있는 리스트
     except (ApiFailure, NoResponse) as e:
         log(f"   장운영정보 실패: {e}")
         ops = []
-    if not ops:
+    if not ops: ##조회 결과가 없을 때
         log("   장운영정보에 이 품목이 없음 → 기본 거래소 사용")
-    if ops:
-        r = ops[0]
+    if ops: ##조회 결과가 있을 때
+        r = ops[0] ## r은 dictionary
+        ## r에 있는 정보 중 필요한 값을 다른 딕셔너리에 추가
+        ### info 딕셔너리에 들어있는 것들 ###
+        # product: 상품코드, exchange: 거래소 코드
+        # name: 상품 이름, currency: 결제 통화 코드
+        # hours_1: 첫 번째 거래시간 정보
+        # hours_2: 두 번째 거래시간 정보
+        # hours_next: 익일 거래시간 정보
+        # settle_time: 정산가격 산정 시간 정보
+        # tick_size: 가격이 움직이는 최소 단위
+        # tick_value: 1계약 가격이 1틱 움직일 때 손익 금액
+        # contract_unit: 계약 단위, 승수 정보
         info.update(exchange=r["occurs1_exch_cd"].strip(), name=r.get("occurs1_prd_nm", "").strip(),
                     currency=r.get("occurs1_cur_cd", "").strip(),
                     hours_1=r.get("occurs1_trd_tm_inf", "").strip(),
                     hours_2=r.get("occurs1_trd_tm_inf_2", "").strip(),
                     hours_next=r.get("occurs1_nxd_trd_tm_inf", "").strip(),
                     settle_time=r.get("occurs1_sett_pric_tm_inf", "").strip())
+        
     try:
         det = [r for r in api.product_detail(prd_cd=prd) if str(r.get("occurs1_prd_cd")).strip() == prd]
-        if not det and prd in EXCH_HINT:
+        if not det and prd in EXCH_HINT: ##결과가 없으면 거래소로 다시 조회
             det = [r for r in api.product_detail(exch_cd=EXCH_HINT[prd]) if str(r.get("occurs1_prd_cd")).strip() == prd]
     except (ApiFailure, NoResponse) as e:
         log(f"   품목세부정보 실패: {e}")
@@ -73,6 +87,7 @@ def product_info(api: OverseasClient, prd: str) -> dict:
         log("   품목세부정보에 이 품목이 없음 → 틱·승수는 나중에 확인 필요")
     if det:
         r = det[0]
+        ## 첫 번째 행에서 필요한 값 추가
         info.update(tick_size=num(r.get("occurs1_tick_unt")), tick_value=num(r.get("occurs1_tick_val")),
                     contract_unit=num(r.get("occurs1_ctr_unt")),
                     currency=info.get("currency") or r.get("occurs1_cur_cd", "").strip(),
@@ -84,6 +99,10 @@ def product_info(api: OverseasClient, prd: str) -> dict:
 
 def resolve_front(api: OverseasClient, prd: str, exch: str) -> tuple[str, str, dict]:
     """후보 월물 중 거래량이 가장 많은 종목을 근월물로."""
+    # best[0]: 시세 요청용 거래소 코드
+    # best[1]: 선택한 계약 코드
+    # best[2]: 해당 계약의 현재가 응답 딕셔너리
+    # best[3]: 해당 계약의 누적거래량
     best = ("", "", {}, -1.0)
     if not exch:
         raise SystemExit(f"{prd}: 거래소를 모릅니다. EXCH_HINT 에 추가해 주세요.")
@@ -140,14 +159,15 @@ def download_bars(api: OverseasClient, exch_cd: str, sym: str, days: int, out: P
 
 def wait_fill(api: OverseasClient, ord_no: str, timeout: float = 15.0) -> dict:
     """주문내역에서 그 주문을 찾아 체결을 기다림."""
-    t_end = time.time() + timeout
+    t_end = time.time() + timeout 
     last: dict = {}
     while time.time() < t_end:
-        for r in api.order_history("0"):
+        for r in api.order_history("0"): #전체 구분의 주문내역을 조회
+            #앞뒤 공백과 주문번호 앞의 0을 제거해서, parameter로 받은 주문번호가 찾는 주문번호인지 비교
             if str(r.get("occurs1_ord_no")).strip().lstrip("0") == ord_no.lstrip("0"):
-                last = r
+                last = r # 해당 주문의 최신정보를 보관
                 if str(r.get("occurs1_ord_sts")).strip() == "6" or num(r.get("occurs1_ord_rem_qty")) == 0 and num(r.get("occurs1_exec_qty")) > 0:
-                    return r
+                    return r #전체체결 or (미체결 잔량 = 0 and 체결수량 > 0) : 즉시 반환
         time.sleep(0.7)
     return last
 
@@ -160,7 +180,7 @@ def decimals_of(tick: float) -> int:
 def send_order(api: OverseasClient, info: dict, side: str) -> tuple[str, str]:
     """(ord_no, 주문 방식). 시장가를 못 받는 거래소면 체결될 만한 지정가."""
     sym, exch = info["symbol"], info.get("exchange", "")
-    if exch not in LIMIT_ONLY_EXCH:
+    if exch not in LIMIT_ONLY_EXCH: #{"HKEX", "HKE"} 이 목록에 없는 거래소는 시장가 주문을 먼저 시도한다
         try:
             return str(api.order_market(sym, side).get("ord_no") or "").strip(), "market"
         except ApiFailure as e:
@@ -170,9 +190,9 @@ def send_order(api: OverseasClient, info: dict, side: str) -> tuple[str, str]:
     tick = info.get("tick_size") or 1.0
     row = api.price(info["exch_cd"], sym)
     ref = num(row.get("occurs1_ask_pric")) if side == "buy" else num(row.get("occurs1_bid_pric"))
-    ref = ref or num(row.get("occurs1_last_pric"))
+    ref = ref or num(row.get("occurs1_last_pric")) #매수는 매도호가, 매도는 매수호가, 호가가 0이면 현재가로 대체
     px = ref + LIMIT_SLIP_TICKS * tick if side == "buy" else ref - LIMIT_SLIP_TICKS * tick
-    px_s = f"{px:.{decimals_of(tick)}f}"
+    px_s = f"{px:.{decimals_of(tick)}f}" # px = 103.0, tick = 1.0 이면: px_s = "103.0" 주문할 지정가격의 상한 또는 하한
     return str(api.order_limit(sym, side, px_s).get("ord_no") or "").strip(), f"limit {px_s}"
 
 
@@ -187,7 +207,7 @@ def one_order(api: OverseasClient, info: dict, side: str, w: csv.writer) -> bool
     except ApiFailure as e:
         log(f"   {side} 거부: {e}")
         w.writerow([t.isoformat(), sym, side, "", f"REJECTED {e.code}", "", e.message]); return False
-    r = wait_fill(api, ord_no)
+    r = wait_fill(api, ord_no) #이미 보낸 주문의 번호를 주문내역에서 찾아, 체결 여부를 반복 확인하는 함수
     sts, px, qty = str(r.get("occurs1_ord_sts", "")).strip(), r.get("occurs1_exec_pric", ""), r.get("occurs1_exec_qty", "")
     log(f"   {side} 상태 {sts or '?'} 체결 {qty} @ {px}")
     w.writerow([t.isoformat(), sym, side, ord_no, sts, px, qty])
