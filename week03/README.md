@@ -15,7 +15,7 @@
 | 기준 봉 | 1분봉, 봉 마감 때 판정 |
 | 실행 환경 | **해외 모의계좌 주문** (`apidemo.futures.co.kr`, 해외 모의 APP Key). 프로그램 안 시뮬레이션은 쓰지 않음 |
 | 실행 계좌 | 11/3 오전: 팀원 해외 모의계좌 · 11/3 오후부터: 남혜원 해외 모의계좌 — **같은 코드·같은 설정**, 키는 실행 PC 환경변수에서 읽음 |
-| 코드 | Python 3.10+ · `requests` (백테스트·분석은 `pandas`) |
+| 코드 | Python 3.10+ · 실행·점검은 `requests` 만, 백테스트·대조 실험(`backtest_orb.py`, `placebo_orb.py`)만 `pandas` 추가 |
 
 ## 폴더 구성
 
@@ -63,7 +63,8 @@
 ## 2. 실행 방법
 
 ```powershell
-python -m pip install requests pandas
+python -m pip install requests   # 실행·점검: run_orb, check_overseas, nh_overseas, order_history, repro_overseas
+python -m pip install pandas     # 백테스트·대조 실험만: backtest_orb, placebo_orb (실행 PC 에는 필요 없음)
 # 키: 사용자 환경변수 NH_OVS_APP_KEY / NH_OVS_APP_SECRET (해외 모의 APP Key). 코드·저장소에 넣지 않음
 
 # ① 점검: 장운영정보·품목세부정보·근월물·과거 1분봉 내려받기 (+ 1계약 주문 왕복, 잔고 대조)
