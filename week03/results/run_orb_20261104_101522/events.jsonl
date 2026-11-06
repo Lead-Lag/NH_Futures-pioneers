@@ -1,0 +1,29 @@
+{"ts": "2026-11-04T10:15:23", "kind": "start", "product": "SFC", "symbol": "SFCX26", "exch_cd": "FSGX", "tick": 1.0, "tick_value": 1.0, "currency": "USD", "position": 0}
+{"ts": "2026-11-04T10:15:24", "kind": "start", "product": "MHI", "symbol": "MHIX26", "exch_cd": "FHKE", "tick": 1.0, "tick_value": 10.0, "currency": "HKD", "position": 0}
+{"ts": "2026-11-04T10:15:24", "kind": "plan", "sessions": ["am", "pm"], "products": ["SFC", "MHI"], "ends_at": "165700"}
+{"ts": "2026-11-04T10:46:08", "kind": "entered", "product": "MHI", "session": "am", "side": 1, "entry": 23522.0, "stop": 23460.0, "target": 23615.0}
+{"ts": "2026-11-04T10:46:08", "kind": "reconcile_ok", "product": "MHI", "position": 1}
+{"ts": "2026-11-04T10:47:16", "kind": "exited", "product": "MHI", "session": "am", "reason": "stop", "exit": 23455.0, "ticks": -67, "pnl": "-670.0 HKD"}
+{"ts": "2026-11-04T10:47:16", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-04T11:16:07", "kind": "entered", "product": "SFC", "session": "am", "side": -1, "entry": 12751.0, "stop": 12777.0, "target": 12712.0}
+{"ts": "2026-11-04T11:16:07", "kind": "reconcile_ok", "product": "SFC", "position": -1}
+{"ts": "2026-11-04T11:21:53", "kind": "exited", "product": "SFC", "session": "am", "reason": "stop", "exit": 12777.0, "ticks": -26, "pnl": "-26.0 USD"}
+{"ts": "2026-11-04T11:21:53", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-04T13:33:08", "kind": "pause", "seconds": 2515, "note": "실행이 멈췄다가 다시 돎"}
+{"ts": "2026-11-04T13:33:22", "kind": "api_error", "err": "chart-minute: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/chart-minute (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.", "streak": 1}
+{"ts": "2026-11-04T13:33:27", "kind": "api_error", "err": "chart-minute: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/chart-minute (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.", "streak": 2}
+{"ts": "2026-11-04T13:34:09", "kind": "api_error", "err": "chart-minute: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/chart-minute (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.", "streak": 1}
+{"ts": "2026-11-04T13:34:14", "kind": "api_error", "err": "chart-minute: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/chart-minute (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.", "streak": 2}
+{"ts": "2026-11-04T14:19:10", "kind": "entered", "product": "MHI", "session": "pm", "side": 1, "entry": 23643.0, "stop": 23613.0, "target": 23688.0}
+{"ts": "2026-11-04T14:19:10", "kind": "reconcile_ok", "product": "MHI", "position": 1}
+{"ts": "2026-11-04T14:30:21", "kind": "exited", "product": "MHI", "session": "pm", "reason": "target", "exit": 23688.0, "ticks": 45, "pnl": "450.0 HKD"}
+{"ts": "2026-11-04T14:30:21", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-04T14:32:07", "kind": "entered", "product": "SFC", "session": "pm", "side": 1, "entry": 12910.0, "stop": 12875.0, "target": 12962.5}
+{"ts": "2026-11-04T14:32:07", "kind": "reconcile_ok", "product": "SFC", "position": 1}
+{"ts": "2026-11-04T14:46:58", "kind": "exited", "product": "SFC", "session": "pm", "reason": "target", "exit": 12965.0, "ticks": 55, "pnl": "55.0 USD"}
+{"ts": "2026-11-04T14:46:58", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-04T14:58:30", "kind": "pause", "seconds": 205, "note": "실행이 멈췄다가 다시 돎"}
+{"ts": "2026-11-04T16:24:07", "kind": "stopped_by_user"}
+{"ts": "2026-11-04T16:24:07", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-04T16:24:07", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-04T16:24:07", "kind": "end", "out": "results\\run_orb_20261104_101522"}

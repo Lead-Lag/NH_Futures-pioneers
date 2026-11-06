@@ -1,0 +1,9 @@
+ts,product,session,purpose,side,ord_no,how,status,fill_price,fill_qty,ref_price,slip_ticks,latency_ms,source
+2026-11-04T10:46:08,MHI,am,entry,buy,0000001180,limit 23527,6,23522.0,0000001,23524.0,-2.0,2595,paper_account
+2026-11-04T10:47:16,MHI,am,exit_stop,sell,0000001181,limit 23454,6,23455.0,0000001,23460.0,5.0,1824,paper_account
+2026-11-04T11:16:07,SFC,am,entry,sell,0000001194,market,6,12751.0,0000001,12749.0,-2.0,1035,paper_account
+2026-11-04T11:21:53,SFC,am,exit_stop,buy,0000001196,market,6,12777.0,0000001,12777.0,0.0,960,paper_account
+2026-11-04T14:19:10,MHI,pm,entry,buy,0000001235,limit 23644,6,23643.0,0000001,23638.0,5.0,5744,paper_account
+2026-11-04T14:30:21,MHI,pm,exit_target,sell,0000001236,limit 23686,6,23688.0,0000001,23688.0,-0.0,1052,paper_account
+2026-11-04T14:32:07,SFC,pm,entry,buy,0000001237,market,6,12910.0,0000001,12911.0,-1.0,973,paper_account
+2026-11-04T14:46:58,SFC,pm,exit_target,sell,0000001242,market,6,12965.0,0000001,12962.5,-2.5,994,paper_account

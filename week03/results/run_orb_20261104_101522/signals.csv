@@ -1,0 +1,5 @@
+ts,product,session,signal_t,side,close,range_hi,range_lo,range_ticks,atr,stop_ticks,action,reason
+2026-11-04T10:46:05,MHI,am,104500,long,23524.0,23508.0,23387.0,121,31.0,62,enter,
+2026-11-04T11:16:06,SFC,am,111500,short,12749.0,12868.0,12755.0,113,12.714,26,enter,
+2026-11-04T14:19:04,MHI,pm,141800,long,23638.0,23631.0,23550.0,81,14.571,30,enter,
+2026-11-04T14:32:06,SFC,pm,143100,long,12911.0,12899.0,12783.0,116,17.357,35,enter,
