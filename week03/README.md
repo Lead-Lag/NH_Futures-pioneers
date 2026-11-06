@@ -149,6 +149,8 @@ python placebo_orb.py                   # 대조 실험
 | 주문 | 1계약, A50 시장가 · MHI 지정가 대체 |
 
 하루 1회 규칙이라 하루 최대 손실은 「종목 2 × 세션 2 × 손절 1회」로 정해집니다. 2주차 같은 일일 손실 한도는 두지 않았습니다.
+ATR은 TradingView의 ATR계산방식을 따랐습니다.
+https://www.tradingview.com/support/solutions/43000501823-average-true-range-atr/
 
 ### 4-3. 값마다 그렇게 정한 이유
 
