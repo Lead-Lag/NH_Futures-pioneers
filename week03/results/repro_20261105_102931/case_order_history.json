@@ -1,0 +1,16 @@
+{
+  "case": "order_history",
+  "sent_at": "2026-11-05T10:29:31",
+  "env": "paper",
+  "url": "https://apidemo.futures.co.kr/trade/v1/overseas/order-history",
+  "request": {
+    "inq_div": "0",
+    "trd_div_cd": "0",
+    "nxt_key": ""
+  },
+  "http_status": 200,
+  "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+  }
+}

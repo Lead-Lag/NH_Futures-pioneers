@@ -1,0 +1,48 @@
+{
+  "case": "price_FHKE_MHIX26",
+  "sent_at": "2026-11-05T10:54:39",
+  "env": "paper",
+  "url": "https://apidemo.futures.co.kr/trade/v1/overseas/price",
+  "request": {
+    "Iccurs1": [
+      {
+        "iccurs1_exch_cd": "FHKE",
+        "iccurs1_sym": "MHIX26"
+      }
+    ]
+  },
+  "http_status": 200,
+  "response": {
+    "Occurs1": [
+      {
+        "occurs1_sym": "MHIX26",
+        "occurs1_high_pric": "24632",
+        "occurs1_last_pric": "24579",
+        "occurs1_rt": "2.74",
+        "occurs1_life_high_dt": "20261105",
+        "occurs1_sett_pric": "23922",
+        "occurs1_life_low_dt": "20261023",
+        "occurs1_ris_trd_qty": "55285",
+        "occurs1_fal_trd_qty": "0",
+        "occurs1_life_high_pric": "24632",
+        "occurs1_pre_close_pric": "23922",
+        "occurs1_biz_dt": "20261105",
+        "occurs1_cum_trd_qty": "55889",
+        "occurs1_open_pric": "23966",
+        "occurs1_low_pric": "23960",
+        "occurs1_ask_pric": "24579",
+        "occurs1_diff_rt": "657",
+        "occurs1_sym_nm": "Mini Hang Seng Index",
+        "occurs1_life_low_pric": "22825",
+        "occurs1_exch_cd": "HKEX",
+        "occurs1_bid_pric": "24578",
+        "occurs1_trd_tm": "105439",
+        "occurs1_real_sym": "MHIX26",
+        "occurs1_ask_qty": "000000000001",
+        "occurs1_bid_qty": "000000000001",
+        "occurs1_pre_sett_dy": "20261104"
+      }
+    ],
+    "nrec": "1"
+  }
+}

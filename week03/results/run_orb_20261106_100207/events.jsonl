@@ -1,0 +1,12 @@
+{"ts": "2026-11-06T10:02:08", "kind": "start", "product": "SFC", "symbol": "SFCX26", "exch_cd": "FSGX", "tick": 1.0, "tick_value": 1.0, "currency": "USD", "position": 0}
+{"ts": "2026-11-06T10:02:09", "kind": "start", "product": "MHI", "symbol": "MHIX26", "exch_cd": "FHKE", "tick": 1.0, "tick_value": 10.0, "currency": "HKD", "position": 0}
+{"ts": "2026-11-06T10:02:09", "kind": "plan", "sessions": ["am", "pm"], "products": ["SFC", "MHI"], "ends_at": "165700"}
+{"ts": "2026-11-06T10:50:04", "kind": "entered", "product": "MHI", "session": "am", "side": 1, "entry": 24563.0, "stop": 24495.0, "target": 24665.0}
+{"ts": "2026-11-06T10:50:05", "kind": "reconcile_ok", "product": "MHI", "position": 1}
+{"ts": "2026-11-06T10:52:58", "kind": "exited", "product": "MHI", "session": "am", "reason": "target", "exit": 24668.0, "ticks": 105, "pnl": "1050.0 HKD"}
+{"ts": "2026-11-06T10:52:58", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-06T12:56:41", "kind": "pause", "seconds": 1331, "note": "실행이 멈췄다가 다시 돎"}
+{"ts": "2026-11-06T15:03:12", "kind": "stopped_by_user"}
+{"ts": "2026-11-06T15:03:12", "kind": "reconcile_ok", "product": "SFC", "position": 0}
+{"ts": "2026-11-06T15:03:12", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-06T15:03:12", "kind": "end", "out": "results\\run_orb_20261106_100207"}

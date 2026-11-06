@@ -1,0 +1,2 @@
+product,session,side,entry_ts,entry,stop,target,exit_ts,exit,reason,ticks,pnl,currency,pnl_krw,hold_min
+MHI,am,long,2026-11-06T10:50:04,24563.0,24495.0,24665.0,2026-11-06T10:52:58,24668.0,target,105,1050.0,HKD,179445,2.9

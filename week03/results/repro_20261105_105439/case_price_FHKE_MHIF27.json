@@ -1,0 +1,22 @@
+{
+  "case": "price_FHKE_MHIF27",
+  "sent_at": "2026-11-05T10:54:39",
+  "env": "paper",
+  "url": "https://apidemo.futures.co.kr/trade/v1/overseas/price",
+  "request": {
+    "Iccurs1": [
+      {
+        "iccurs1_exch_cd": "FHKE",
+        "iccurs1_sym": "MHIF27"
+      }
+    ]
+  },
+  "http_status": 400,
+  "response": {
+    "errorTime": "2026-11-05 10:54:39",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: MHIF27]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/price"
+  }
+}
