@@ -1,0 +1,2 @@
+ts,product,session,signal_t,side,close,range_hi,range_lo,range_ticks,atr,stop_ticks,action,reason
+2026-11-05T10:51:37,SFC,am,104500,long,12990.0,12983.0,12899.0,84,14.714,30,skip_session,stale_bar_337s

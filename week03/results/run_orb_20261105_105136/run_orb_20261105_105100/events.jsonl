@@ -1,0 +1,11 @@
+{"ts": "2026-11-05T10:51:02", "kind": "start", "product": "MHI", "symbol": "MHIX26", "exch_cd": "FHKE", "tick": 1.0, "tick_value": 10.0, "currency": "HKD", "position": 0}
+{"ts": "2026-11-05T10:51:02", "kind": "plan", "sessions": ["am", "pm"], "products": ["MHI"], "ends_at": "165700"}
+{"ts": "2026-11-05T10:51:02", "kind": "missed_first_signal", "product": "MHI", "session": "am", "bar": "104700", "age_s": 182}
+{"ts": "2026-11-05T14:16:06", "kind": "entered", "product": "MHI", "session": "pm", "side": 1, "entry": 24719.0, "stop": 24674.0, "target": 24786.5}
+{"ts": "2026-11-05T14:16:06", "kind": "reconcile_ok", "product": "MHI", "position": 1}
+{"ts": "2026-11-05T14:44:15", "kind": "exited", "product": "MHI", "session": "pm", "reason": "stop", "exit": 24673.0, "ticks": -46, "pnl": "-460.0 HKD"}
+{"ts": "2026-11-05T14:44:15", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-05T16:07:05", "kind": "pause", "seconds": 1481, "note": "실행이 멈췄다가 다시 돎"}
+{"ts": "2026-11-05T16:07:09", "kind": "api_error", "err": "chart-minute: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/chart-minute (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.", "streak": 1}
+{"ts": "2026-11-05T16:57:01", "kind": "reconcile_ok", "product": "MHI", "position": 0}
+{"ts": "2026-11-05T16:57:01", "kind": "end", "out": "results\\run_orb_20261105_105100"}

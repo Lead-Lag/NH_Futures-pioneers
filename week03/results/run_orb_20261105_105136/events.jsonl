@@ -1,0 +1,5 @@
+{"ts": "2026-11-05T10:51:37", "kind": "start", "product": "SFC", "symbol": "SFCX26", "exch_cd": "FSGX", "tick": 1.0, "tick_value": 1.0, "currency": "USD", "position": 0}
+{"ts": "2026-11-05T10:51:37", "kind": "plan", "sessions": ["am", "pm"], "products": ["SFC"], "ends_at": "155700"}
+{"ts": "2026-11-05T10:51:37", "kind": "missed_first_signal", "product": "SFC", "session": "am", "bar": "104500", "age_s": 337}
+{"ts": "2026-11-05T16:07:07", "kind": "reconcile_failed", "product": "SFC", "err": "open-interest: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/overseas/open-interest (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' ([Errno 11001] getaddrinfo failed)\"))"}
+{"ts": "2026-11-05T16:07:07", "kind": "end", "out": "results\\run_orb_20261105_105136"}

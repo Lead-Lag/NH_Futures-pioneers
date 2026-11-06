@@ -1,0 +1,3 @@
+ts,product,session,purpose,side,ord_no,how,status,fill_price,fill_qty,ref_price,slip_ticks,latency_ms,source
+2026-11-05T14:16:06,MHI,pm,entry,buy,0000001454,limit 24720,6,24719.0,0000001,24712.0,7.0,2584,paper_account
+2026-11-05T14:44:15,MHI,pm,exit_stop,sell,0000001497,limit 24671,6,24673.0,0000001,24674.0,1.0,1832,paper_account

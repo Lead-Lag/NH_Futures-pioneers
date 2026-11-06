@@ -1,0 +1,55 @@
+{
+  "run_id": "run_orb_20261105_105136",
+  "started": "2026-11-05T10:51:36.922734",
+  "mode": "paper",
+  "env": "paper",
+  "rule": {
+    "k": 2.0,
+    "m": 1.5,
+    "range_min": 15,
+    "atr_n": 14,
+    "min_stop_ticks": 2,
+    "min_range_ticks": 8
+  },
+  "sessions": {
+    "am": {
+      "open_t": "103000",
+      "last_entry": "112900"
+    },
+    "pm": {
+      "open_t": "140000",
+      "last_entry": "145900"
+    }
+  },
+  "products": {
+    "SFC": {
+      "product": "SFC",
+      "exchange": "SGX",
+      "name": "FTSE China A50",
+      "currency": "USD",
+      "hours_1": "10:00 ~ 17:35",
+      "hours_2": "18:00 ~ 06:15",
+      "hours_next": "00:00 ~ 00:00",
+      "settle_time": "17:35:00 ~ 17:35:00",
+      "tick_size": 1.0,
+      "tick_value": 1.0,
+      "contract_unit": 1.0,
+      "exch_cd": "FSGX",
+      "symbol": "SFCX26",
+      "symbol_name": "FTSE China A50",
+      "tick": 1.0,
+      "session_start": "100000",
+      "exit": {
+        "am": "122500",
+        "pm": "155500"
+      }
+    }
+  },
+  "poll_sec": 5.0,
+  "fx": {
+    "USDKRW": 1338.5,
+    "HKDKRW": 170.9
+  },
+  "python": "3.15.2 (tags/v3.15.2:5e58eaa, Oct 25 2026, 17:27:03) [MSC v.1951 64 bit (AMD64)]",
+  "finished": "2026-11-05T16:07:07.491324"
+}

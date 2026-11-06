@@ -1,0 +1,3 @@
+ts,product,session,signal_t,side,close,range_hi,range_lo,range_ticks,atr,stop_ticks,action,reason
+2026-11-05T10:51:02,MHI,am,104700,long,24545.0,24528.0,24274.0,254,29.214,59,skip_session,stale_bar_182s
+2026-11-05T14:16:04,MHI,pm,141500,long,24712.0,24705.0,24609.0,96,22.143,45,enter,
