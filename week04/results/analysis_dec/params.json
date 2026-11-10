@@ -1,0 +1,38 @@
+{
+  "session_start": "0900",
+  "session_end": "1529",
+  "entry_start": "0910",
+  "entry_end": "1500",
+  "force_exit": "1515",
+  "window": 40,
+  "entry_z": 2.0,
+  "exit_z": 0.5,
+  "stop_z": 3.5,
+  "max_hold": 60,
+  "cooldown": 3,
+  "require_fresh": true,
+  "slip_ticks": 1.0,
+  "design_days": [
+    "20261028",
+    "20261029",
+    "20261030",
+    "20261102",
+    "20261103"
+  ],
+  "beta": 0.6067786443823646,
+  "mu_fixed": 3.7384584911059395,
+  "sd_fixed": 0.026340294131141646,
+  "tick_s": 100.0,
+  "tick_h": 1000.0,
+  "cost_bp": 21.419956716684446,
+  "q_S": 39,
+  "q_H": 4,
+  "mult_s": 10.0,
+  "mult_h": 10.0,
+  "validation_days": [
+    "20261104",
+    "20261105",
+    "20261106",
+    "20261109"
+  ]
+}
