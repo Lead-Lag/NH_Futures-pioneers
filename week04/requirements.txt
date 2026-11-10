@@ -1,0 +1,8 @@
+# Python 3.10 이상 (시험한 환경: 3.13 · 3.15)
+# 실행 코드(run_pair.py · backtest_pair.py · pair_walkforward.py)
+requests>=2.31,<3
+websockets>=15,<18      # 실시간(WebSocket) 시세·주문/체결 통보. 동기 클라이언트(websockets.sync) 사용, 시험 17.4
+# 실행 전 분석(pair_analyze.py analyze)에만 필요
+pandas>=2.2,<4          # 시험 3.0.5 · 3.1.1
+numpy>=1.24,<3          # 시험 2.5.3
+matplotlib>=3.7,<4      # 그림(선택), 시험 3.11.2
