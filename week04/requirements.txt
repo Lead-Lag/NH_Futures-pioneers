@@ -1,0 +1,6 @@
+requests
+websockets   # 실시간(WebSocket) 시세·주문/체결 통보
+# 아래는 pair_analyze.py(실행 전 분석)에만 필요
+pandas
+numpy
+matplotlib

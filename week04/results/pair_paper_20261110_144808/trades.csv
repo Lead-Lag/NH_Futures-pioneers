@@ -1,0 +1,2 @@
+﻿trade_no,direction,qty_s,qty_h,entry_time,entry_s,entry_h,entry_z,exit_time,exit_s,exit_h,exit_reason,spread_bp,pnl_s,pnl_h,fee,net_pl,held_bars,held_sec,daily_pnl_after
+1,LONG_SPREAD,10,1,2026-11-10T14:50:06.243289+09:00,200500.0,1210000.0,-2.529,2026-11-10T14:52:07.193120+09:00,200000.0,1209000.0,EXIT_CONVERGE,-20.09,-50000,10000,0,-40000,2,121,-40000

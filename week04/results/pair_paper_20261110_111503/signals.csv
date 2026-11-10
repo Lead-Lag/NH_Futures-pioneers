@@ -1,0 +1,2 @@
+﻿ts,bar_start,signal,reason,prev_z,z,spread,mu,sd_bp,close_s,close_h,fresh,taken,blocked_by
+2026-11-10T11:18:00+09:00,2026-11-10T11:17:00+09:00,ENTRY_LONG_SPREAD,z -0.49→-2.65 삼성 상대 저평가,-0.49,-2.65,3.948336,3.95134,11.34,200000.0,1198000.0,1,1,

@@ -1,0 +1,3 @@
+﻿pair_id,intent_ts,purpose,direction,reason,status,qty_s,qty_h,avg_s,avg_h,ref_s,ref_h,orders,first_fill_ts,hedged_ts,exposure_ms,unwind_pnl,message,source
+-1,2026-11-10T14:53:53.950597+09:00,ENTRY_LONG_SPREAD,1,주문 API 왕복 확인,COMPLETE,1,1,200500.0,1207000.0,200500.0,1209000.0,2,2026-11-10T14:53:54.304+09:00,2026-11-10T14:53:54.546+09:00,242,0,두 다리 체결,paper_account
+-2,2026-11-10T14:53:54.548429+09:00,EXIT_MANUAL,1,주문 API 왕복 확인,COMPLETE,1,1,200000.0,1209000.0,200500.0,1209000.0,2,2026-11-10T14:53:54.800+09:00,2026-11-10T14:53:55.049+09:00,248,0,두 다리 청산,paper_account
