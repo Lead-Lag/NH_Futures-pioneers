@@ -17,6 +17,7 @@
   "entry_end": "15:00",
   "flat_time": "15:15",
   "require_fresh": true,
+  "min_window_fresh": 0.8,
   "qty_s": 10,
   "qty_h": 1,
   "mult_s": 10,

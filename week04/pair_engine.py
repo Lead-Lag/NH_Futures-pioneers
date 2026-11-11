@@ -51,11 +51,12 @@ class PairParams:
     entry_end: str = "15:00"
     flat_time: str = "15:15"
     require_fresh: bool = True
+    min_window_fresh: float = 0.8     # z 계산 창(40봉) 중 두 종목 모두 체결된 봉 비율 하한 — 끊김 뒤 평평한 봉으로 σ 가 작아져 z 가 튀는 것 방지(11/11)
     qty_s: int = 10                   # 삼성 계약 수
     qty_h: int = 1                    # 하이닉스 계약 수
     mult_s: float = 10                # 거래승수(주)
     mult_h: float = 10
-    tick_s: float = 100               # 호가단위(원) — 미끄러짐 계산용
+    tick_s: float = 100               # 호가단위(원) 기본값 — 실제 계산은 tick_size(가격)
     tick_h: float = 1000
     first_leg: str = "H"              # 먼저 보낼 다리 (체결이 덜 확실한 쪽)
     pair_stop_won: float = 150_000    # 페어 합산 평가손실 손절(원)
@@ -101,6 +102,20 @@ class PairIntent:
 _ids = count(1)
 
 
+# KRX 주식·주식선물 호가가격단위(2023.1~). 삼성 선물은 20만원을 넘으면 100원 → 500원으로 바뀜(11/11 실행에서 확인).
+_TICK_TABLE = ((2_000, 1), (5_000, 5), (20_000, 10), (50_000, 50), (200_000, 100), (500_000, 500))
+
+
+def tick_size(price: float, default: float = 0.0) -> float:
+    """가격 수준에 맞는 호가단위(원). price 가 없으면 default."""
+    if not price or price <= 0:
+        return default
+    for limit, tick in _TICK_TABLE:
+        if price < limit:
+            return float(tick)
+    return 1000.0
+
+
 def _hm(text: str) -> time:
     h, m = text.split(":")
     return time(int(h), int(m))
@@ -119,6 +134,7 @@ class PairEngine:
         self.p = params
         self.j = journal
         self.spreads: deque[float] = deque(maxlen=params.window)
+        self.freshes: deque[bool] = deque(maxlen=params.window)
         self.prev_z: float | None = None
         self.day = None
         self.direction = 0            # +1 스프레드 매수 보유, −1 매도 보유, 0 없음
@@ -142,6 +158,7 @@ class PairEngine:
     def _new_day(self, d) -> None:
         self.day = d
         self.spreads.clear()
+        self.freshes.clear()
         self.prev_z = None
         self.daily_pnl = 0.0
         self.daily_trades = 0
@@ -179,6 +196,7 @@ class PairEngine:
         fresh = bool(pb.get("fresh_s")) and bool(pb.get("fresh_h"))
         s = self.spread(ps, ph)
         self.spreads.append(s)
+        self.freshes.append(fresh)
         z = None
         if len(self.spreads) == self.p.window:
             mu = sum(self.spreads) / self.p.window
@@ -255,6 +273,8 @@ class PairEngine:
             return "진입시간 밖"
         if self.p.require_fresh and not fresh:
             return "한쪽 종목 그 분 체결 없음"
+        if self.freshes and sum(self.freshes) / len(self.freshes) < self.p.min_window_fresh:
+            return f"z 계산 창의 실제 체결 봉 {sum(self.freshes)}/{len(self.freshes)} — 끊김 뒤 지표 회복 대기"
         if self.cooldown > 0:
             return f"손절 뒤 대기 {self.cooldown}봉"
         if self.daily_trades >= self.p.max_trades_per_day:

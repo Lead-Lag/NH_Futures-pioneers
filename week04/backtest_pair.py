@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from journal import RunJournal, summarize_run
-from pair_engine import BUY, COMPLETE, PairEngine, PairIntent, PairParams, align_minutes, params_dict
+from pair_engine import BUY, COMPLETE, PairEngine, PairIntent, PairParams, align_minutes, params_dict, tick_size
 
 KST = timezone(timedelta(hours=9))
 HERE = Path(__file__).resolve().parent
@@ -32,7 +32,7 @@ class _Fill:
         for leg in it.legs:
             d = 1 if leg.side == BUY else -1
             self.qty[leg.name] = leg.qty
-            self.avg[leg.name] = prices[leg.name] + d * slip * ticks[leg.name]
+            self.avg[leg.name] = prices[leg.name] + d * slip * tick_size(prices[leg.name], ticks[leg.name])
         self.unwind_pnl = 0.0
         self.message = "백테스트 체결 가정"
 

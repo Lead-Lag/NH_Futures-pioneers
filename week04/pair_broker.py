@@ -29,7 +29,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from nh_client import BusinessError, NHApiError, NHClient, TransportError, num
-from pair_engine import ABORTED, BROKEN, BUY, COMPLETE, SELL, UNWOUND, Leg, PairIntent
+from pair_engine import ABORTED, BROKEN, BUY, COMPLETE, SELL, UNWOUND, Leg, PairIntent, tick_size
 
 KST = timezone(timedelta(hours=9))
 
@@ -198,7 +198,7 @@ class BasePairExecutor:
         out.legs.append(r)
         ref = it.ref.get(leg.name) or 0.0
         d = 1 if leg.side == BUY else -1
-        slip = round((r.avg - ref) * d / self.ticks[leg.name], 2) if (r.filled and ref) else ""
+        slip = round((r.avg - ref) * d / tick_size(ref, self.ticks[leg.name]), 2) if (r.filled and ref) else ""
         self.j.leg({
             "pair_id": it.id, "purpose": it.purpose, "role": role, "leg": leg.name, "sym": r.sym,
             "side": leg.side, "qty": leg.qty, "ord_no": r.ord_no, "status": r.status, "filled": r.filled,
@@ -222,7 +222,7 @@ class SimPairExecutor(BasePairExecutor):
             r.status, r.message = "ERROR", f"현재가 조회 실패 {exc}"
             return
         last, ask, bid = num(q.get("last_pric")), num(q.get("ask_pric")), num(q.get("bid_pric"))
-        t = self.ticks[r.name]
+        t = tick_size(last, self.ticks[r.name])
         px = (ask if ask > 0 else last + t) if r.side == BUY else (bid if bid > 0 else last - t)
         if px <= 0:
             r.status, r.message = "ERROR", "호가·현재가 없음"

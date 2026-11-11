@@ -177,5 +177,34 @@ class EngineTest(unittest.TestCase):
         self.assertEqual((rows[1]["close_s"], rows[1]["fresh_s"], rows[1]["fresh_h"]), (100.0, False, True))
 
 
+class TickSizeTest(unittest.TestCase):
+    def test_krx_tick_table(self):
+        from pair_engine import tick_size
+        self.assertEqual(tick_size(199_900), 100)    # 삼성 20만원 미만
+        self.assertEqual(tick_size(200_000), 500)    # 20만원부터 500원 (11/11 실행에서 확인)
+        self.assertEqual(tick_size(1_265_000), 1000)  # 하이닉스
+        self.assertEqual(tick_size(0, 100), 100)      # 가격 없으면 기본값
+
+
+class WindowFreshTest(unittest.TestCase):
+    def test_entry_blocked_after_flat_gap(self):
+        """11/11 13:13 재현: 끊긴 동안 평평한(체결 없는) 봉이 창을 채우면 z 가 −6 으로 튀어도 진입하지 않음."""
+        from pair_engine import PairEngine, PairParams
+        p = PairParams()
+        eng = PairEngine(p, J())
+        eng.warmup = False
+        t0 = datetime(2026, 11, 11, 12, 30, tzinfo=timezone(timedelta(hours=9)))
+        out = None
+        for i in range(45):
+            gap = 5 <= i < 44                       # 12:35~13:13 체결 없음(직전 종가 반복)
+            ph = 1_247_000 if i < 44 else 1_265_000
+            ps = 204_500 + (0 if gap or i % 2 else 500)
+            out = eng.on_bar_close({"start": t0 + timedelta(minutes=i), "close_s": ps, "close_h": ph,
+                                    "fresh_s": not gap, "fresh_h": not gap})
+        self.assertIsNotNone(eng.last_z)
+        self.assertLess(eng.last_z, -2)
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()
