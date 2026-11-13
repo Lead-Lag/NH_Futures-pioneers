@@ -1,0 +1,62 @@
+{
+  "run_id": "contest_20261113_114631",
+  "started": "2026-11-13T11:46:31.894292",
+  "mode": "paper",
+  "rule": {
+    "k": 2.0,
+    "m": 1.5,
+    "range_min": 15,
+    "atr_n": 14,
+    "min_stop_ticks": 2,
+    "min_range_ticks": 8
+  },
+  "sessions": {
+    "late": {
+      "open_t": "153000",
+      "last_entry": "162900"
+    }
+  },
+  "products": {
+    "MHI": {
+      "product": "MHI",
+      "exchange": "HKEX",
+      "name": "Mini Hang Seng Index",
+      "currency": "HKD",
+      "hours_1": "10:15 ~ 13:00",
+      "hours_2": "14:00 ~ 17:30",
+      "hours_next": "18:15 ~ 04:00",
+      "settle_time": "17:30:00 ~ 17:30:00",
+      "tick_size": 1.0,
+      "tick_value": 10.0,
+      "contract_unit": 10.0,
+      "exch_cd": "FHKE",
+      "symbol": "MHIX26",
+      "symbol_name": "Mini Hang Seng Index",
+      "tick": 1.0,
+      "session_start": "101500",
+      "exit": {
+        "am": "125500",
+        "pm": "165500",
+        "late": "165500"
+      }
+    }
+  },
+  "args": {
+    "products": "MHI",
+    "sessions": "late",
+    "poll": 1.0,
+    "capital": 100000,
+    "risk_pct": 0.2,
+    "max_qty": 10,
+    "max_loss_pct": 0.6,
+    "until": "1800",
+    "no_ws": false,
+    "dry_run": false,
+    "usdkrw": 0.0,
+    "hkdkrw": 170.9,
+    "base_url": null,
+    "test_at": null,
+    "speed": 1.0
+  },
+  "finished": "2026-11-13T12:34:15.700600"
+}
