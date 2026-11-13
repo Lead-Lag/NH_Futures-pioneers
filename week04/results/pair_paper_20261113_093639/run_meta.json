@@ -1,0 +1,101 @@
+{
+  "run_id": "pair_paper_20261113_093639",
+  "mode": "paper",
+  "mode_label": "모의계좌 주문",
+  "environment": "paper",
+  "base_url": "https://apidemo.futures.co.kr",
+  "symbols": {
+    "S": "A116C000",
+    "H": "A506C000"
+  },
+  "strategy": "삼성전자·SK하이닉스 주식선물 페어 평균회귀 (1분봉, rolling z)",
+  "params": {
+    "beta": 0.59,
+    "window": 40,
+    "entry_z": 2.0,
+    "exit_z": 0.5,
+    "stop_z": 3.5,
+    "entry_mode": "immediate",
+    "max_hold_bars": 60,
+    "cooldown_bars_after_stop": 3,
+    "session_start": "09:00",
+    "entry_start": "09:10",
+    "entry_end": "15:00",
+    "flat_time": "15:15",
+    "require_fresh": true,
+    "min_window_fresh": 0.8,
+    "qty_s": 10,
+    "qty_h": 1,
+    "mult_s": 10,
+    "mult_h": 10,
+    "tick_s": 100,
+    "tick_h": 1000,
+    "first_leg": "H",
+    "pair_stop_won": 150000,
+    "daily_loss_limit": 500000,
+    "max_trades_per_day": 20,
+    "fee_per_contract": 0
+  },
+  "leg_timeout": 8.0,
+  "poll": 5.0,
+  "websocket": {
+    "enabled": true,
+    "connects": 3,
+    "gaps": 2,
+    "bars_ws": 225,
+    "bars_rest": 8,
+    "rest_quote_fallbacks": 2,
+    "ticks": 57705,
+    "clock_offset_median": 0.521
+  },
+  "started_at": "2026-11-13T09:36:39+09:00",
+  "python": "3.15.2",
+  "instruments": {
+    "S": {
+      "sym_nm": "삼성전자   F 202612 (  10)",
+      "last_pric": "212500",
+      "ask_pric": "213000",
+      "bid_pric": "212500",
+      "lst_trd_dt": "20261210",
+      "rem_dy": "28",
+      "mltplr": "10"
+    },
+    "H": {
+      "sym_nm": "SK하이닉스 F 202612 (  10)",
+      "last_pric": "1269000",
+      "ask_pric": "1270000",
+      "bid_pric": "1269000",
+      "lst_trd_dt": "20261210",
+      "rem_dy": "28",
+      "mltplr": "10"
+    }
+  },
+  "orderable": {
+    "S_BUY": {
+      "cls_psb_qty": "00000000000000.000000000",
+      "ord_psb_qty": "00000000000127.000000000",
+      "ord_psb_amt": "00000000000100000000.000",
+      "tot_psb_qty": "00000000000127.000000000"
+    },
+    "S_SELL": {
+      "cls_psb_qty": "00000000000000.000000000",
+      "ord_psb_qty": "00000000000127.000000000",
+      "ord_psb_amt": "00000000000100000000.000",
+      "tot_psb_qty": "00000000000127.000000000"
+    },
+    "H_BUY": {
+      "cls_psb_qty": "00000000000000.000000000",
+      "ord_psb_qty": "00000000000017.000000000",
+      "ord_psb_amt": "00000000000100000000.000",
+      "tot_psb_qty": "00000000000017.000000000"
+    },
+    "H_SELL": {
+      "cls_psb_qty": "00000000000000.000000000",
+      "ord_psb_qty": "00000000000017.000000000",
+      "ord_psb_amt": "00000000000100000000.000",
+      "tot_psb_qty": "00000000000017.000000000"
+    }
+  },
+  "ended_at": "2026-11-13T13:30:01+09:00",
+  "final_engine_direction": 0
+}
