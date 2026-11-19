@@ -1,0 +1,17 @@
+# 백테스트 요약 — signal_mode = bottleneck
+
+## 보유 63거래일 — 신호 2건 (기간 끝난 것 2건)
+- 평균 수익률 +71.2% · 코스피 +1.0% · 평균 초과수익 +70.2% (표준오차 5.6%, 보유기간이 겹치면 실제 불확실성은 더 큼)
+- 초과수익 > 0 비율 100% · 평균 MDD -18.6% · 최악 MDD -19.9%
+
+signal_month keyword entry_date  exit_date  complete  n_stocks  port_ret  bench_ret  alpha  port_mdd overheat_exit
+     2024-03     변압기 2024-04-01 2024-07-03      True         3    +0.655     +0.010 +0.645    -0.172          None
+     2024-03     전력망 2024-04-01 2024-07-03      True         2    +0.768     +0.010 +0.758    -0.199          None
+
+## 보유 126거래일 — 신호 2건 (기간 끝난 것 2건)
+- 평균 수익률 +48.1% · 코스피 -6.2% · 평균 초과수익 +54.3% (표준오차 7.5%, 보유기간이 겹치면 실제 불확실성은 더 큼)
+- 초과수익 > 0 비율 100% · 평균 MDD -41.8% · 최악 MDD -43.3%
+
+signal_month keyword entry_date  exit_date  complete  n_stocks  port_ret  bench_ret  alpha  port_mdd overheat_exit
+     2024-03     변압기 2024-04-01 2024-10-08      True         3    +0.556     -0.062 +0.618    -0.404          None
+     2024-03     전력망 2024-04-01 2024-10-08      True         2    +0.406     -0.062 +0.468    -0.433          None

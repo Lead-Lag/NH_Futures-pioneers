@@ -1,0 +1,142 @@
+{
+  "cmd": "backtest",
+  "signal_mode": "bottleneck",
+  "news": "results/news/test_news.csv",
+  "months": [
+    "2024-03"
+  ],
+  "news_rows": 7,
+  "news_months": [
+    "2023-12",
+    "2024-03"
+  ],
+  "today": "2026-11-17",
+  "config": {
+    "_설명": "수익률을 보기 전에 고정하는 값. 바꾸면 run_meta.json 에 그대로 남는다. 키워드·종목 매핑은 '작성일' 기준으로 그때 알 수 있던 정보만으로 정한다.",
+    "작성일": "2026-11-17",
+    "bottleneck_terms": [
+      "부족",
+      "지연",
+      "차질",
+      "품귀",
+      "필수",
+      "교체",
+      "확충"
+    ],
+    "rank_weight": "inverse",
+    "lookback_months": 6,
+    "min_history_months": 3,
+    "min_co_count": 2,
+    "min_novelty": 1.5,
+    "top_n": 2,
+    "exclude_tier": [
+      "1차"
+    ],
+    "overheat_issue_share": 0.3,
+    "overheat_exit_fraction": 0.5,
+    "horizons_days": [
+      63,
+      126
+    ],
+    "round_trip_cost": 0.003,
+    "benchmark": "KS11",
+    "keywords": {
+      "변압기": {
+        "aliases": [
+          "변압기"
+        ],
+        "tier": "2차",
+        "tickers": {
+          "267260": "HD현대일렉트릭",
+          "298040": "효성중공업",
+          "010120": "LS ELECTRIC"
+        }
+      },
+      "전력망": {
+        "aliases": [
+          "전력망",
+          "송전망",
+          "송배전",
+          "송전선"
+        ],
+        "tier": "2차",
+        "tickers": {
+          "001440": "대한전선",
+          "010120": "LS ELECTRIC"
+        }
+      },
+      "원전": {
+        "aliases": [
+          "원전",
+          "원자력"
+        ],
+        "tier": "1차",
+        "tickers": {
+          "034020": "두산에너빌리티"
+        }
+      },
+      "원전기자재": {
+        "aliases": [
+          "원전 기자재",
+          "원전기자재",
+          "원자로",
+          "SMR",
+          "소형모듈원전"
+        ],
+        "tier": "2차",
+        "tickers": {
+          "052690": "한전기술",
+          "051600": "한전KPS",
+          "032820": "우리기술"
+        }
+      },
+      "방산": {
+        "aliases": [
+          "방산",
+          "방위산업",
+          "무기 수출"
+        ],
+        "tier": "1차",
+        "tickers": {
+          "012450": "한화에어로스페이스",
+          "064350": "현대로템"
+        }
+      },
+      "탄약": {
+        "aliases": [
+          "탄약",
+          "포탄",
+          "추진제",
+          "화약"
+        ],
+        "tier": "2차",
+        "tickers": {
+          "103140": "풍산"
+        }
+      },
+      "유도무기": {
+        "aliases": [
+          "유도무기",
+          "미사일",
+          "방공"
+        ],
+        "tier": "2차",
+        "tickers": {
+          "079550": "LIG넥스원"
+        }
+      },
+      "AI반도체": {
+        "aliases": [
+          "AI 반도체",
+          "AI반도체",
+          "HBM"
+        ],
+        "tier": "1차",
+        "tickers": {
+          "000660": "SK하이닉스",
+          "005930": "삼성전자"
+        }
+      }
+    }
+  }
+}

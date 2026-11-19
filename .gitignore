@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# NH선물 API 키·토큰
+config.local.json
+.token_cache.json

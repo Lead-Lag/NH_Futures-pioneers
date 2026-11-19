@@ -1,0 +1,6 @@
+pandas>=2.0
+numpy
+finance-datareader
+openpyxl
+requests
+websockets
