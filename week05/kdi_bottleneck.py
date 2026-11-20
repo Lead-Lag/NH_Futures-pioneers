@@ -499,7 +499,69 @@ def avg_trading_value(code: str, before: pd.Timestamp, days: int, start: str, en
     return float((win["Close"] * win["Volume"]).mean())
 
 
-def build_discover_signals(news, cfg, listing, prices_dir: Path, today: pd.Timestamp, control: bool):
+# ───────────────────────── 2차 연결: 1차 회사를 계약상대로 둔 공급계약 공시 ─────────────────────────
+CORP_RE = re.compile(r"\(주\)|㈜|주식회사|\(유\)|유한회사|co\.?,?\s*ltd\.?|inc\.?|corporation|corp\.?|limited|ltd\.?", re.I)
+
+
+# 한글로 적은 영문 그룹명(「(주)엘지유플러스」 「(주)케이티」) → 상장사 목록 표기(LG유플러스 · KT)
+HANGUL_ALIAS = {"엘지": "lg", "에스케이": "sk", "케이티": "kt", "씨제이": "cj", "지에스": "gs", "에이치디": "hd",
+                "엘에스": "ls", "에이치엘": "hl", "디비": "db", "케이씨씨": "kcc", "에쓰오일": "s-oil", "포스코홀딩스": "posco홀딩스"}
+
+
+def norm_name(s: str) -> str:
+    t = re.sub(r"[\s.,·\-()&]", "", CORP_RE.sub("", str(s))).lower()
+    for k, v in HANGUL_ALIAS.items():
+        if t.startswith(k):
+            t = v.replace("-", "") + t[len(k):]
+            break
+    return t
+
+
+def load_contracts(path: Path, corp_codes: Path | None) -> pd.DataFrame:
+    """dart_collect.py contracts 결과. 정정 공시는 쓰지 않는다(원래 공시의 접수일 = 그 정보를 알 수 있게 된 날)."""
+    c = pd.read_csv(path, dtype=str, encoding="utf-8-sig").fillna("")
+    c = c[(c["is_correction"].str.lower() != "true") & (c["stock_code"].str.strip() != "")
+          & ~c["report_nm"].str.contains("거래정지")].copy()          # 「주권매매거래정지(단일판매공급계약)」 는 계약 공시가 아님
+    c["rcept_dt"] = pd.to_datetime(c["rcept_dt"], format="%Y%m%d", errors="coerce")
+    c["supplier"] = c["stock_code"].str.zfill(6)
+    # 계약상대 칸에 여러 회사가 있으면(「삼성전자, SK하이닉스」) 나눠서 각각 맞춘다
+    c["cp_parts"] = c["counterparty"].map(lambda x: [norm_name(p) for p in re.split(r"[,/;]|및|외\s*\d*\s*개?사?|등", x) if norm_name(p)])
+    print(f"[공급계약] {len(c)}건(정정 제외) · 계약상대 읽음 {(c['counterparty'].str.len() > 1).mean():.0%} · "
+          f"비공개(-) {(c['counterparty'].str.strip() == '-').mean():.0%}", file=sys.stderr)
+    eng = {}
+    if corp_codes is not None and corp_codes.exists():
+        cc = pd.read_csv(corp_codes, dtype=str, encoding="utf-8-sig").fillna("")
+        if "corp_eng_name" in cc.columns:
+            eng = {r.stock_code.zfill(6): norm_name(r.corp_eng_name) for r in cc.itertuples() if r.corp_eng_name}
+    c.attrs["eng"] = eng
+    return c
+
+
+def secondary_candidates(first: pd.DataFrame, contracts: pd.DataFrame, entry: pd.Timestamp, days: int,
+                         listing: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
+    """1차 회사(first)를 계약상대로 둔 공급계약을 진입일 전 days 일 안에 공시한 회사 = 2차 후보(1차 회사 자신은 제외)."""
+    win = contracts[(contracts["rcept_dt"] < entry) & (contracts["rcept_dt"] >= entry - pd.Timedelta(days=days))]
+    eng = contracts.attrs.get("eng", {})
+    names = {}
+    for code, nm in zip(first["Code"], first["Name"]):
+        for k in {norm_name(nm), eng.get(code, "")}:
+            if len(k) >= 2:
+                names[k] = (code, nm)
+    hits = []
+    for r in win.itertuples():
+        for part in r.cp_parts:
+            m = names.get(part) or next((v for k, v in names.items() if len(k) >= 3 and part.startswith(k)), None)
+            if m and r.supplier != m[0]:
+                hits.append({"supplier": r.supplier, "supplier_name": r.corp_name, "customer": m[1],
+                             "counterparty": r.counterparty, "contract": r.contract_name, "rcept_dt": r.rcept_dt.date(),
+                             "sales_ratio": r.sales_ratio, "rcept_no": r.rcept_no})
+                break
+    sup = {h["supplier"] for h in hits} - set(first["Code"])
+    return listing[listing["Code"].isin(sup)], [h for h in hits if h["supplier"] in sup]
+
+
+def build_discover_signals(news, cfg, listing, prices_dir: Path, today: pd.Timestamp, control: bool,
+                           contracts: pd.DataFrame | None = None):
     d = cfg["discover"]
     found = discover(news, cfg, require_bottleneck=not control, top_n=d["candidate_tokens"])
     start = (news["date"].min() - pd.Timedelta(days=60)).strftime("%Y-%m-%d")
@@ -507,6 +569,7 @@ def build_discover_signals(news, cfg, listing, prices_dir: Path, today: pd.Times
     bench = get_prices(cfg["benchmark"], start, end, prices_dir)
     cal = bench.index
     sig_rows, cfg2, mapping_log = [], json.loads(json.dumps(cfg)), []
+    evidence = []                                           # 2차 연결 근거(어떤 공시로 연결됐는지)
     cfg2["keywords"] = {}
     for m, g in found.groupby("month"):
         entry = entry_date_for(m, news, cal)
@@ -516,14 +579,20 @@ def build_discover_signals(news, cfg, listing, prices_dir: Path, today: pd.Times
         for _, r in g.iterrows():                           # 점수 높은 단어부터
             cand = match_products(r["token"], listing, d)
             cand = cand[~(cand["ListingDate"] >= entry)]          # 진입일에 아직 상장 전인 회사 제외
+            n_first = len(cand)
+            if contracts is not None and not cand.empty:         # --link secondary: 1차 → 그 1차에 납품한 회사
+                cand, ev = secondary_candidates(cand, contracts, entry, cfg.get("secondary_days", 365), listing)
+                cand = cand[~(cand["ListingDate"] >= entry)]
+                evidence += [{"month": str(m), "token": r["token"], **e} for e in ev]
             if cand.empty:
-                mapping_log.append({"month": str(m), "token": r["token"], "score": r["score"], "n_match": 0, "picked": ""})
+                mapping_log.append({"month": str(m), "token": r["token"], "score": r["score"], "n_first": n_first,
+                                    "n_match": 0, "picked": ""})
                 continue
             tv = [(c, nm, avg_trading_value(c, entry, d["liquidity_days"], start, end, prices_dir))
                   for c, nm in zip(cand["Code"], cand["Name"])]
             tv = sorted([x for x in tv if pd.notna(x[2])], key=lambda x: -x[2])[: d["stocks_per_token"]]
-            mapping_log.append({"month": str(m), "token": r["token"], "score": r["score"], "n_match": len(cand),
-                                "picked": " · ".join(f"{nm}({c})" for c, nm, _ in tv)})
+            mapping_log.append({"month": str(m), "token": r["token"], "score": r["score"], "n_first": n_first,
+                                "n_match": len(cand), "picked": " · ".join(f"{nm}({c})" for c, nm, _ in tv)})
             if not tv:
                 continue
             key = f"{r['token']}@{m}"
@@ -533,6 +602,7 @@ def build_discover_signals(news, cfg, listing, prices_dir: Path, today: pd.Times
             picked += 1
             if picked >= d["map_top_tokens"]:
                 break
+    cfg2["_evidence"] = evidence
     return pd.DataFrame(sig_rows), cfg2, pd.DataFrame(mapping_log)
 
 
@@ -552,8 +622,12 @@ def main() -> None:
                     help="상장사 주요제품 목록(없으면 FDR KRX-DESC 를 받아 이 경로에 저장)")
     ap.add_argument("--entry-day", type=int, default=1,
                     help="M+1월 이 날짜 이후 첫 거래일에 진입(기본 1일). 공개 시점 민감도 분석용, 예: 15")
-    ap.add_argument("--freq", choices=["M", "W"], default="M",
-                    help="신호 기간: M=월(기본) · W=주(월~일, 다음 주 첫 거래일 시가 진입). W 는 빅카인즈처럼 그날 검색 가능한 뉴스에만")
+    ap.add_argument("--freq", choices=["M", "W", "D"], default="M",
+                    help="신호 기간: M=월(기본) · W=주(월~일, 다음 주 첫 거래일 시가) · D=일(다음 거래일 시가). W·D 는 빅카인즈처럼 그날 검색 가능한 뉴스에만")
+    ap.add_argument("--link", choices=["first", "secondary"], default="first",
+                    help="first: 주요제품이 단어와 맞는 회사(1차) · secondary: 그 1차 회사를 계약상대로 둔 공급계약 공시 회사(2차)")
+    ap.add_argument("--contracts", type=Path, default=None, help="--link secondary 용 dart_collect.py contracts 결과 CSV")
+    ap.add_argument("--corp-codes", type=Path, default=Path("results/dart/corp_codes.csv"))
     ap.add_argument("--control", action="store_true", help="backtest-discover 대조군: 병목어 조건 없이 새로 많이 나온 단어")
     a = ap.parse_args()
 
@@ -564,6 +638,9 @@ def main() -> None:
     if a.freq == "W":
         FREQ = "W-SUN"
         cfg.update(cfg.get("weekly", {}))                  # 주 단위 기준선 길이·보유기간(설정 파일의 weekly 항목)
+    elif a.freq == "D":
+        FREQ = "D"                                         # 그날 기사 → 다음 거래일 시가 진입(주말 기사는 월요일)
+        cfg.update(cfg.get("daily", {}))
     cfg["freq"] = FREQ
     news = load_news(a.news)
     months = [m.strip() for m in a.months.split(",") if m.strip()] or None
@@ -572,10 +649,20 @@ def main() -> None:
 
     if a.cmd == "backtest-discover":
         listing = load_listing(a.listing)
-        sigs, cfg2, mlog = build_discover_signals(news, cfg, listing, a.prices, pd.Timestamp(a.today), a.control)
+        contracts = None
+        if a.link == "secondary":
+            if a.contracts is None:
+                sys.exit("[오류] --link secondary 에는 --contracts results/dart/contracts_….csv 가 필요합니다.")
+            contracts = load_contracts(a.contracts, a.corp_codes)
+        cfg["link"] = a.link
+        sigs, cfg2, mlog = build_discover_signals(news, cfg, listing, a.prices, pd.Timestamp(a.today), a.control, contracts)
         mlog.to_csv(out / "token_mapping.csv", index=False, encoding="utf-8-sig")
+        if contracts is not None:
+            pd.DataFrame(cfg2.pop("_evidence")).to_csv(out / "secondary_evidence.csv", index=False, encoding="utf-8-sig")
+        else:
+            cfg2.pop("_evidence", None)
         sigs.to_csv(out / "signals.csv", index=False, encoding="utf-8-sig")
-        mode = "discover-control" if a.control else "discover"
+        mode = ("discover-control" if a.control else "discover") + ("-secondary" if contracts is not None else "")
         (out / "run_meta.json").write_text(json.dumps({"cmd": a.cmd, "control": a.control, "news": str(a.news),
             "listing": str(a.listing), "listing_rows": len(listing), "today": a.today, "config": cfg},
             ensure_ascii=False, indent=2, default=str), encoding="utf-8")

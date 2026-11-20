@@ -327,5 +327,16 @@
     "의사",
     "의대",
     "병상"
-  ]
+  ],
+  "secondary_days": 365,
+  "daily": {
+    "_설명": "--freq D 일 때만 덮어씀. 기준선 = 직전 28일(최소 14일), 보유 = 1주 · 1개월 · 3개월(주 단위와 같게)",
+    "lookback_months": 28,
+    "min_history_months": 14,
+    "horizons_days": [
+      5,
+      21,
+      63
+    ]
+  }
 }

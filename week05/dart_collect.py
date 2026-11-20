@@ -87,11 +87,12 @@ def corp_codes(d: Dart) -> list[dict]:
     z = zipfile.ZipFile(io.BytesIO(r.content))
     root = ET.fromstring(z.read(z.namelist()[0]))
     rows = [{"corp_code": e.findtext("corp_code"), "corp_name": e.findtext("corp_name"),
+             "corp_eng_name": (e.findtext("corp_eng_name") or "").strip(),      # 영문 계약상대(「SK hynix」 등) 연결용
              "stock_code": (e.findtext("stock_code") or "").strip()} for e in root.iter("list")]
     rows = [x for x in rows if x["stock_code"]]
     OUT.mkdir(parents=True, exist_ok=True)
     with f.open("w", encoding="utf-8-sig", newline="") as fp:
-        w = csv.DictWriter(fp, fieldnames=["corp_code", "corp_name", "stock_code"])
+        w = csv.DictWriter(fp, fieldnames=["corp_code", "corp_name", "corp_eng_name", "stock_code"])
         w.writeheader()
         w.writerows(rows)
     return rows
@@ -137,6 +138,15 @@ FIELDS = {   # 원문 표의 왼쪽 칸 이름(일부만 맞아도 됨) → 저�
 }
 
 
+LABELS = [n.replace(" ", "") for ns in FIELDS.values() for n in ns] + ["최근매출액", "판매ㆍ공급지역", "계약기간", "회사와의관계"]
+
+
+def is_label(v: str) -> bool:
+    """값이 아니라 다음 칸의 이름(「최근 매출액(원)」 등)인지."""
+    k = v.replace(" ", "")
+    return any(n in k for n in LABELS) or bool(re.fullmatch(r".*\((원|%|USD|백만원)\)", k))
+
+
 def cells(xml: str) -> list[str]:
     return [re.sub(r"\s+", " ", TAG_RE.sub(" ", c[1])).replace("&amp;", "&").strip() for c in CELL_RE.findall(xml)]
 
@@ -144,6 +154,11 @@ def cells(xml: str) -> list[str]:
 def parse_contract(xml: str) -> dict:
     """「왼쪽 칸 이름 → 오른쪽 칸 값」. 형식이 회사마다 조금씩 달라 못 찾으면 빈칸(원본은 raw/ 에 있음)."""
     cs = cells(xml)
+    # 정정 공시는 앞에 「정정전 · 정정후」 비교표가 있어 정정전 값을 먼저 읽게 됨 → 비교표 뒤 본문(1. 판매ㆍ공급계약 내용 …)부터 읽는다
+    if any("정정사항" in c for c in cs[:20]):
+        body = [i for i, c in enumerate(cs) if c.replace(" ", "").startswith("1.판매")]
+        if body:
+            cs = cs[body[-1]:]
     got = {}
     for i, c in enumerate(cs[:-1]):
         key = c.replace(" ", "")
@@ -151,8 +166,8 @@ def parse_contract(xml: str) -> dict:
             if field in got:
                 continue
             if any(n.replace(" ", "") in key for n in names) and "관계" not in key and "회사와의" not in key:
-                v = next((x for x in cs[i + 1:i + 4] if x and x != "-"), "")
-                if v and not any(n.replace(" ", "") in v.replace(" ", "") for n in names):
+                v = next((x for x in cs[i + 1:i + 4] if x), "")
+                if v and not is_label(v):          # 「-」 은 비공개·해당 없음이므로 그대로 둔다(다음 칸 이름을 값으로 읽지 않게)
                     got[field] = v
     return got
 
@@ -170,7 +185,7 @@ def fetch_doc(d: Dart, rcept_no: str) -> str:
 
 
 # ───────────────────────── 실행 ─────────────────────────
-COLS = ["rcept_no", "rcept_dt", "corp_code", "corp_name", "stock_code", "corp_cls", "report_nm",
+COLS = ["rcept_no", "rcept_dt", "corp_code", "corp_name", "stock_code", "corp_cls", "report_nm", "is_correction",
         "counterparty", "contract_name", "amount", "sales_ratio", "contract_date", "period_start", "period_end"]
 
 
@@ -183,7 +198,7 @@ def cmd_test(d: Dart, a) -> None:
     print(f"[2] {last:%Y-%m} 공급계약 공시 {len(rows)}건 (정정 공시 포함)")
     for x in rows[:a.n]:
         p = parse_contract(fetch_doc(d, x["rcept_no"]))
-        print(f"    {x['rcept_dt']} {x['corp_name']:<12} → 상대: {p.get('counterparty', '?'):<20} "
+        print(f"    {x['rcept_no']} {x['corp_name']:<12} → 상대: {p.get('counterparty', '?'):<20} "
               f"| {p.get('contract_name', '?')[:30]} | 매출액 대비 {p.get('sales_ratio', '?')}")
     print(f"API 호출 {d.calls}회 (하루 한도 2만 회)")
 
@@ -197,17 +212,24 @@ def cmd_contracts(d: Dart, a) -> None:
         print(f"{first:%Y-%m}: 공급계약 공시 {len(rows)}건")
         lst += rows
     out = OUT / f"contracts_{a.start}_{a.end}.csv"
-    n_ok = 0
+    n_ok, n_fix, t0 = 0, 0, time.time()
+    todo = sum(1 for x in lst if "정정" not in x["report_nm"] or a.with_corrections)
+    print(f"원문을 열 공시 {todo}건(정정 공시 {len(lst) - todo}건은 목록만 저장) · 이미 받은 원문은 다시 받지 않음")
     with out.open("w", encoding="utf-8-sig", newline="") as fp:
         w = csv.DictWriter(fp, fieldnames=COLS)
         w.writeheader()
         for i, x in enumerate(lst, 1):
-            p = parse_contract(fetch_doc(d, x["rcept_no"]))
+            fix = "정정" in x["report_nm"]
+            # 2차 연결에는 원래 공시(그 접수일에 알 수 있던 정보)만 쓰므로 정정 공시 원문은 기본적으로 열지 않는다
+            p = {} if (fix and not a.with_corrections) else parse_contract(fetch_doc(d, x["rcept_no"]))
             n_ok += bool(p.get("counterparty"))
-            w.writerow({**x, **p})
-            if i % 100 == 0:
-                print(f"  원문 {i}/{len(lst)} · 계약상대를 읽은 공시 {n_ok}건")
-    print(f"저장: {out} — {len(lst)}건 중 계약상대를 읽은 공시 {n_ok}건 ({n_ok / max(len(lst), 1):.0%}) · API 호출 {d.calls}회")
+            n_fix += fix
+            w.writerow({**x, **p, "is_correction": fix})
+            if i % 200 == 0:
+                el = time.time() - t0
+                print(f"  {i}/{len(lst)} · 계약상대를 읽은 공시 {n_ok}건 · {el / 60:.0f}분 경과, 남은 시간 약 {el / i * (len(lst) - i) / 60:.0f}분")
+    base = max(len(lst) - n_fix, 1)
+    print(f"저장: {out} — {len(lst)}건(정정 {n_fix}건 제외 {base}건) 중 계약상대를 읽은 공시 {n_ok}건 ({n_ok / base:.0%}) · API 호출 {d.calls}회")
 
 
 def main() -> None:
@@ -216,7 +238,8 @@ def main() -> None:
     ap.add_argument("--start", default="2023-04", help="contracts 시작 월(2차 연결은 진입 전 12개월 공시를 쓰므로 표본보다 1년 앞부터)")
     ap.add_argument("--end", default="2024-11")
     ap.add_argument("--n", type=int, default=3, help="test 에서 원문을 열어 볼 공시 수")
-    ap.add_argument("--delay", type=float, default=0.5, help="요청 간격(초)")
+    ap.add_argument("--delay", type=float, default=0.3, help="요청 간격(초)")
+    ap.add_argument("--with-corrections", action="store_true", help="정정 공시 원문도 열기(기본: 목록만)")
     a = ap.parse_args()
     d = Dart(api_key(), a.delay)
     {"test": cmd_test, "contracts": cmd_contracts}[a.cmd](d, a)
