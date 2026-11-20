@@ -1,0 +1,11 @@
+﻿ts,api,http_status,latency_ms,error_code,message
+2026-11-20T14:48:08.402+09:00,token,200,181.7,,
+2026-11-20T14:48:08.436+09:00,domestic_price-bid,200,28.4,,
+2026-11-20T14:48:08.472+09:00,domestic_price-bid,200,31.8,,
+2026-11-20T14:48:08.590+09:00,domestic_price-bid,200,29.6,,
+2026-11-20T14:48:08.712+09:00,domestic_price-bid,200,31.2,,
+2026-11-20T14:48:08.827+09:00,domestic_price-bid,200,25.5,,
+2026-11-20T14:48:08.906+09:00,domestic_open-interest,200,73.7,,
+2026-11-20T14:48:09.024+09:00,domestic_open-interest,200,71.1,,
+2026-11-20T14:48:09.146+09:00,domestic_open-interest,200,73.0,,
+2026-11-20T14:48:09.263+09:00,domestic_open-interest,200,69.6,,

@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pd
 
 REQUIRED = ["date", "issue_rank", "issue_title", "news_title"]
+FREQ = "M"          # --freq W 이면 "W-SUN"(월~일 한 주). 아래 코드의 「month」 열은 신호 기간(달 또는 주)을 뜻한다.
 
 
 # ───────────────────────── 데이터 읽기 ─────────────────────────
@@ -49,10 +50,14 @@ def load_news(path: Path) -> pd.DataFrame:
         df["published_date"] = pd.to_datetime(df["published_date"], errors="coerce")
     for c in ("issue_title", "news_title"):
         df[c] = df[c].fillna("").str.strip()
-    df["month"] = df["date"].dt.to_period("M")
+    df["month"] = df["date"].dt.to_period(FREQ)
     if (df["issue_title"] == "").all():
         print("[알림] issue_title 이 모두 비어 있습니다(빅카인즈 데이터 등) — TOP10 이슈 점유율 기반 과열 익절은 작동하지 않습니다.",
               file=sys.stderr)
+    elif FREQ != "M":
+        # KDI 이슈 묶음(어떤 기사가 어느 이슈에 들어가는지)은 그 달이 끝난 뒤 공개된다 → 달 중간 주 단위 신호는 미래 정보 사용
+        sys.exit("[오류] 주 단위(--freq W)는 그날그날 검색할 수 있는 뉴스(빅카인즈 등, issue_title 이 빈 데이터)에만 쓸 수 있습니다. "
+                 "KDI 월간 이슈는 달이 끝난 뒤 묶여 공개되므로 주 단위로 쓰면 미래 편향이 생깁니다.")
     # 과열 판정용 이슈 목록은 중복 제거 전에 따로 보관(어느 이슈에도 기사가 남지 않는 경우 대비)
     issues = df[["month", "issue_rank", "issue_title"]].drop_duplicates(["month", "issue_rank"])
     # 같은 달 같은 제목이 여러 이슈(또는 여러 언론사)에 있으면 가장 높은 순위 이슈의 1건만 남긴다
@@ -74,6 +79,12 @@ def rank_weight(rank: pd.Series, mode: str) -> pd.Series:
     raise ValueError(f"rank_weight 는 inverse|uniform: {mode}")
 
 
+def b_filter(titles: pd.Series, cfg: dict) -> pd.Series:
+    """병목어가 있고, 해소어·제외어(맥락 좁히기: 파업·인사·주택 …)가 없는 제목."""
+    return (contains_any(titles, cfg["bottleneck_terms"]) & ~contains_any(titles, cfg.get("resolution_terms", []))
+            & ~contains_any(titles, cfg.get("exclude_terms", [])))
+
+
 def contains_any(s: pd.Series, words: list[str]) -> pd.Series:
     out = pd.Series(False, index=s.index)
     for w in words:
@@ -88,8 +99,7 @@ def monthly_counts(news: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     r_terms = cfg.get("resolution_terms", [])
     w = rank_weight(news["issue_rank"], cfg["rank_weight"])
     # 병목어가 있어도 해소어(해소·해결·완화 …)가 같은 제목에 있으면 병목이 풀렸다는 기사로 보고 뺀다
-    news_has_b = contains_any(news["news_title"], b_terms) & ~contains_any(news["news_title"], r_terms)
-    issue_has_b = contains_any(news["issue_title"], b_terms) & ~contains_any(news["issue_title"], r_terms)
+    news_has_b = b_filter(news["news_title"], cfg)
     issues = news.attrs.get("issues", news[["month", "issue_rank", "issue_title"]].drop_duplicates(["month", "issue_rank"]))
 
     rows = []
@@ -121,7 +131,7 @@ def add_scores(counts: pd.DataFrame, cfg: dict, mode: str) -> pd.DataFrame:
     """novelty 기준선은 그 달 이전 lookback 개월만 사용 — shift(1) 로 당월을 뺀다."""
     col = "co_w" if mode == "bottleneck" else "mention_w"
     L, min_hist = cfg["lookback_months"], cfg["min_history_months"]
-    all_months = pd.period_range(counts["month"].min(), counts["month"].max(), freq="M")
+    all_months = pd.period_range(counts["month"].min(), counts["month"].max(), freq=FREQ)
     out = []
     for kw, g in counts.groupby("keyword"):
         g = g.set_index("month").reindex(all_months)
@@ -191,8 +201,11 @@ def max_drawdown(path: pd.Series) -> float:
 
 
 # ───────────────────────── 백테스트 ─────────────────────────
+ENTRY_MIN_DAY = 1   # --entry-day: KDI 집계 공개가 늦을 때를 대비해 M+1월 N일 이후 첫 거래일에 진입(민감도)
+
+
 def entry_date_for(month: pd.Period, news: pd.DataFrame, cal: pd.DatetimeIndex) -> pd.Timestamp | None:
-    d = (month + 1).start_time
+    d = (month + 1).start_time + pd.Timedelta(days=ENTRY_MIN_DAY - 1)
     if "published_date" in news.columns:          # KDI 집계가 늦게 공개되면 그 다음 거래일로 미룸
         pub = news.loc[news["month"] == month, "published_date"].max()
         if pd.notna(pub):
@@ -203,7 +216,7 @@ def entry_date_for(month: pd.Period, news: pd.DataFrame, cal: pd.DatetimeIndex) 
 def overheat_exit_date(scores: pd.DataFrame, kw: str, entry: pd.Timestamp, last: pd.Timestamp,
                        cfg: dict, cal: pd.DatetimeIndex) -> tuple[pd.Timestamp | None, str | None]:
     g = scores[(scores["keyword"] == kw)].set_index("month")
-    m = entry.to_period("M")
+    m = entry.to_period(FREQ)
     while True:
         if m not in g.index:
             return None, None
@@ -224,6 +237,8 @@ def backtest(news, scores, signals, cfg, prices_dir: Path, today: pd.Timestamp):
         sys.exit(f"[오류] 벤치마크 {bench_code} 가격이 없습니다.")
     cal = bench.index
     cost = cfg["round_trip_cost"]
+    # 헤지: 같은 금액의 코스피200 을 판 것으로 계산(코스피200선물 매도의 근사, 선물 베이시스·증거금 이자 무시)
+    hedge = get_prices(cfg.get("hedge_benchmark", "KS200"), start, end, prices_dir)
     trades, events = [], []
     month_legs: dict = {}   # (월, 보유기간) → {종목코드: (경로, 순수익률)} — 같은 달 신호끼리 겹치는 종목은 한 번만
 
@@ -289,10 +304,17 @@ def backtest(news, scores, signals, cfg, prices_dir: Path, today: pd.Timestamp):
         port = pd.concat([v[0] for v in legs.values()], axis=1).ffill().mean(axis=1)
         pr = float(np.mean([v[1] for v in legs.values()]))
         kws = signals.loc[signals["month"].astype(str) == m, "keyword"].tolist()
-        ports.append({"signal_month": m, "horizon": H, "keywords": "·".join(kws), "n_stocks": len(legs),
-                      "codes": ",".join(legs), "entry_date": entry.date(), "exit_date": exit_d.date(),
-                      "complete": complete, "port_ret": pr, "bench_ret": b_ret, "alpha": pr - b_ret,
-                      "port_mdd": max_drawdown(port)})
+        row = {"signal_month": m, "horizon": H, "keywords": "·".join(kws), "n_stocks": len(legs),
+               "codes": ",".join(legs), "entry_date": entry.date(), "exit_date": exit_d.date(),
+               "complete": complete, "port_ret": pr, "bench_ret": b_ret, "alpha": pr - b_ret,
+               "port_mdd": max_drawdown(port)}
+        if hedge is not None and entry in hedge.index and exit_d in hedge.index:
+            hp = hedge.loc[entry:exit_d, "Close"] / hedge.loc[entry, "Open"]
+            hp = hp.reindex(port.index).ffill()
+            hedged = 1 + (port - 1) - (hp - 1)                      # 주식 매수 + 같은 금액 코스피200 매도
+            row.update({"k200_ret": float(hp.iloc[-1] - 1), "hedged_ret": pr - float(hp.iloc[-1] - 1),
+                        "hedged_mdd": max_drawdown(hedged)})
+        ports.append(row)
     return pd.DataFrame(trades), pd.DataFrame(events), pd.DataFrame(ports)
 
 
@@ -312,9 +334,15 @@ def summarize(ports: pd.DataFrame, events: pd.DataFrame, mode: str) -> str:
                 f"평균 초과수익 {a.mean():+.1%} (표준오차 {se:.1%}, 보유기간이 겹치면 실제 불확실성은 더 큼)",
                 f"- 초과수익 > 0 비율 {(a > 0).mean():.0%} · 평균 MDD {done['port_mdd'].mean():.1%} · 최악 MDD {done['port_mdd'].min():.1%}",
             ]
+            if "hedged_ret" in done.columns and done["hedged_ret"].notna().any():
+                hr = done["hedged_ret"].dropna()
+                hse = hr.std(ddof=1) / np.sqrt(len(hr)) if len(hr) > 1 else float("nan")
+                lines.append(f"- 코스피200 헤지(같은 금액 매도): 평균 {hr.mean():+.1%} (표준오차 {hse:.1%}, t {hr.mean() / hse if hse == hse and hse > 0 else float('nan'):+.2f}) · "
+                             f"> 0 비율 {(hr > 0).mean():.0%} · 평균 MDD {done['hedged_mdd'].mean():.1%} · 최악 MDD {done['hedged_mdd'].min():.1%}")
         lines.append("")
-        lines.append(g[["signal_month", "keywords", "n_stocks", "entry_date", "exit_date", "complete",
-                        "port_ret", "bench_ret", "alpha", "port_mdd"]]
+        cols = ["signal_month", "keywords", "n_stocks", "entry_date", "exit_date", "complete",
+                "port_ret", "bench_ret", "alpha", "port_mdd"] + [c for c in ("hedged_ret", "hedged_mdd") if c in g.columns]
+        lines.append(g[cols]
                      .to_string(index=False, float_format=lambda x: f"{x:+.3f}"))
         lines.append("")
     return "\n".join(lines)
@@ -347,15 +375,17 @@ def discover(news: pd.DataFrame, cfg: dict, require_bottleneck: bool = True, top
     require_bottleneck=False 이면 병목어 조건 없이 모든 제목의 단어를 센다(대조군: 「그냥 많이 나온 새 단어」)."""
     d = cfg["discover"]
     b_terms = cfg["bottleneck_terms"]
-    stop = set(d["stopwords"]) | set(b_terms)
+    # 단어에서 뺄 병목 표현: 병목어 자체 + 구(「공급 부족」)를 이루는 단어 + 핵심 병목어(부족·지연 …)가 들어간 단어
+    core = cfg.get("bottleneck_core", b_terms)
+    stop = set(d["stopwords"]) | set(b_terms) | {w for t in b_terms for w in t.split()}
     w = rank_weight(news["issue_rank"], cfg["rank_weight"])
+    keep = b_filter(news["news_title"], cfg) if require_bottleneck else pd.Series(True, index=news.index)
     rows = []
-    for (m, wt, title) in zip(news["month"], w, news["news_title"]):
-        if require_bottleneck and (not any(b in title for b in b_terms)
-                                   or any(r in title for r in cfg.get("resolution_terms", []))):
+    for (m, wt, title, k) in zip(news["month"], w, news["news_title"], keep):
+        if not k:
             continue
         toks = tokenize(title, d)
-        uni = [t for t in toks if len(t) >= d["min_token_len"] and t not in stop and not any(b in t for b in b_terms)]
+        uni = [t for t in toks if len(t) >= d["min_token_len"] and t not in stop and not any(b in t for b in core)]
         grams = set(uni)
         if d["use_bigrams"]:
             for a, b in zip(toks, toks[1:]):
@@ -366,7 +396,7 @@ def discover(news: pd.DataFrame, cfg: dict, require_bottleneck: bool = True, top
     if not rows:
         return pd.DataFrame()
     df = pd.DataFrame(rows)
-    all_m = pd.period_range(news["month"].min(), news["month"].max(), freq="M")
+    all_m = pd.period_range(news["month"].min(), news["month"].max(), freq=FREQ)
     co_n = df.pivot_table(index="token", columns="month", values="w", aggfunc="size", fill_value=0).reindex(columns=all_m, fill_value=0)
     co_w = df.pivot_table(index="token", columns="month", values="w", aggfunc="sum", fill_value=0).reindex(columns=all_m, fill_value=0)
     past = co_w.shift(1, axis=1)                          # 당월 제외, 이전 달만
@@ -520,10 +550,21 @@ def main() -> None:
     ap.add_argument("--today", default=datetime.now().strftime("%Y-%m-%d"))
     ap.add_argument("--listing", default=Path("results/listing_krx_desc.csv"), type=Path,
                     help="상장사 주요제품 목록(없으면 FDR KRX-DESC 를 받아 이 경로에 저장)")
+    ap.add_argument("--entry-day", type=int, default=1,
+                    help="M+1월 이 날짜 이후 첫 거래일에 진입(기본 1일). 공개 시점 민감도 분석용, 예: 15")
+    ap.add_argument("--freq", choices=["M", "W"], default="M",
+                    help="신호 기간: M=월(기본) · W=주(월~일, 다음 주 첫 거래일 시가 진입). W 는 빅카인즈처럼 그날 검색 가능한 뉴스에만")
     ap.add_argument("--control", action="store_true", help="backtest-discover 대조군: 병목어 조건 없이 새로 많이 나온 단어")
     a = ap.parse_args()
 
     cfg = load_config(a.config)
+    global ENTRY_MIN_DAY, FREQ
+    ENTRY_MIN_DAY = a.entry_day
+    cfg["entry_min_day"] = a.entry_day
+    if a.freq == "W":
+        FREQ = "W-SUN"
+        cfg.update(cfg.get("weekly", {}))                  # 주 단위 기준선 길이·보유기간(설정 파일의 weekly 항목)
+    cfg["freq"] = FREQ
     news = load_news(a.news)
     months = [m.strip() for m in a.months.split(",") if m.strip()] or None
     out = a.out or Path("results") / f"{a.cmd}_{a.signal_mode}_{datetime.now():%Y%m%d_%H%M%S}"
