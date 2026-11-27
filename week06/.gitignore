@@ -1,0 +1,10 @@
+.venv*/
+venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.kis_token*
+.token_cache.json
+kis_cache/
+kis_spot/

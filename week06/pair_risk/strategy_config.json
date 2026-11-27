@@ -1,0 +1,82 @@
+{
+  "_설명": "6주차 전략+위험관리 설정(4주차 페어 그대로 + 위험관리). 실행마다 run_meta.json 에 복사. 위쪽 값은 4주차와 같고(근거 README 3절), 아래 6주차 값의 근거는 risk_analyze.py 결과(README 위험관리 절). shadows = 같은 실시간 시세로 주문 없이 함께 돌리는 비교 규칙(전·후 비교), monitor = 실행 중 감시 규칙",
+  "sym_s": "A116C000",
+  "name_s": "삼성전자",
+  "sym_h": "A506C000",
+  "name_h": "SK하이닉스",
+  "beta": 0.59,
+  "window": 40,
+  "entry_z": 2.0,
+  "exit_z": 0.5,
+  "stop_z": 3.5,
+  "entry_mode": "immediate",
+  "max_hold_bars": 30,
+  "cooldown_bars_after_stop": 3,
+  "session_start": "09:00",
+  "entry_start": "09:10",
+  "entry_end": "15:00",
+  "flat_time": "15:15",
+  "require_fresh": true,
+  "min_window_fresh": 0.8,
+  "qty_s": 10,
+  "qty_h": 1,
+  "mult_s": 10,
+  "mult_h": 10,
+  "tick_s": 100,
+  "tick_h": 1000,
+  "first_leg": "H",
+  "pair_stop_won": 150000,
+  "daily_loss_limit": 500000,
+  "max_trades_per_day": 20,
+  "fee_per_contract": 0,
+  "risk_off": false,
+  "init_units": 1,
+  "max_units": 1,
+  "add_z": 0.0,
+  "partial_exit_z": 0.0,
+  "stop_per_unit": false,
+  "max_consec_losses": 3,
+  "open_pnl_in_limit": true,
+  "shadows": {
+    "R0_위험관리없음": {
+      "risk_off": true,
+      "max_units": 1,
+      "add_z": 0,
+      "partial_exit_z": 0
+    },
+    "R1_4주차규칙": {
+      "init_units": 1,
+      "max_units": 1,
+      "add_z": 0,
+      "partial_exit_z": 0,
+      "stop_per_unit": false,
+      "max_consec_losses": 0,
+      "open_pnl_in_limit": false,
+      "max_hold_bars": 60
+    },
+    "R2_6주차위험관리": {},
+    "R3_속도필터(하이닉스선행)": {
+      "speed_filter": "lead_h",
+      "speed_bars": 3
+    },
+    "R2v_변동성손절(k3·바닥5만·천장15만)": {
+      "stop_sigma_k": 3.0,
+      "stop_floor_won": 50000,
+      "stop_cap_won": 150000
+    }
+  },
+  "monitor": {
+    "blind_exit_sec": 30,
+    "max_exposure_ms": 3000,
+    "exposure_breaches_halt": 2,
+    "heartbeat_sec": 60,
+    "block_entry_when_ws_down": true,
+    "max_clock_offset_sec": 2.0
+  },
+  "speed_filter": "",
+  "speed_bars": 3,
+  "jump_z": 1.5,
+  "stop_sigma_k": 0.0,
+  "stop_floor_won": 0.0,
+  "stop_cap_won": 0.0
+}

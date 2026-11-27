@@ -1,0 +1,11 @@
+# 키·토큰 — 절대 올리지 않음
+.kis_token*
+.token_cache.json
+.env
+# 한국투자증권 원자료(재배포 금지·용량) — results/ 의 요약만 올림
+kis_cache/
+kis_spot/
+# 파이썬 부산물
+__pycache__/
+.pytest_cache/
+*.pyc
