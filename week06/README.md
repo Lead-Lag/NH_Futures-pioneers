@@ -506,9 +506,9 @@ python run_pair.py --mode paper                                     # ② 본 �
 
 ---
 
-## B. 2주차 전략에 위험관리 붙이기 — 미국달러 선물 볼린저 복귀 + 해외 FX 충격 필터 (팀원 · `hedge_02/`)
+## B. 2주차 전략에 위험관리 붙이기 — 미국달러 선물 볼린저 복귀 + 해외 FX 충격 필터 (정찬필 · `fx_filter/`)
 
-> 이 부분의 코드·결과 경로는 모두 **`hedge_02/` 폴더 기준**입니다(예: `generated_reslults/` = `hedge_02/generated_reslults/`).
+> 이 부분의 코드·결과 경로는 모두 **`fx_filter/` 폴더 기준**이다(예: `generated_reslults/` = `hedge_02/generated_reslults/`).
 
 week02의 평균회귀 전략에 **유로·엔 선물에서 달러가 함께 강해지거나 약해질 때, 그 흐름에 반대되는 국내 달러 선물 진입을 보류하는 조건**을 추가했다. 예를 들어 두 해외 가격이 모두 달러 강세를 나타내면 국내 달러 선물의 매도 진입을 막는다. 이 조건이 손실을 줄이는지 과거 데이터로 비교한 뒤, 같은 설정을 NH 모의계좌에서 실행했다.
 
@@ -573,11 +573,11 @@ week02의 평균회귀 전략에 **유로·엔 선물에서 달러가 함께 강
 
 10월 국내 만기 계약의 NH 과거 차트 요청이 빈 결과여서 week02에 보관된 같은 계약의 실제 분봉을 사용했다. 다른 월물 가격으로 대체하지 않았다. 10/29 국내 자료는 13:52까지로 불완전하며 누락 분을 임의로 채우지 않았다.
 
-수집 원자료와 출처 기록은 `generated_reslults/data_20261126_021718_739961_fetch-nh/`(10월), `generated_reslults/data_20261126_072510_885775_fetch-nh/`(11월)에 보관한다.
+수집 원자료와 출처 기록은 `results/data_20261126_021718_739961_fetch-nh/`(10월), `results/data_20261126_072510_885775_fetch-nh/`(11월)에 보관한다.
 
 #### 2.2 체결 가정과 대조군
 
-백테스트와 본 실행은 [analyze.py](hedge_02/analyze.py)의 같은 `Engine`과 `FXShockFilter`를 사용한다. 백테스트는 신호 이후 다음 봉 시가에 불리한 슬리피지를 적용하고, 봉 안 가격 경로를 알 수 없을 때 손절을 우선 처리한다. 기본 슬리피지는 **체결당 1틱**, 비용 스트레스는 **체결당 2틱**이다. 수수료는 0원으로, 실측 수수료를 반영한 손익이 아니다. MDD는 1분봉 종가 평가곡선 기준이다.
+백테스트와 본 실행은 [analyze.py](fx_filter/analyze.py)의 같은 `Engine`과 `FXShockFilter`를 사용한다. 백테스트는 신호 이후 다음 봉 시가에 불리한 슬리피지를 적용하고, 봉 안 가격 경로를 알 수 없을 때 손절을 우선 처리한다. 기본 슬리피지는 **체결당 1틱**, 비용 스트레스는 **체결당 2틱**이다. 수수료는 0원으로, 실측 수수료를 반영한 손익이 아니다. MDD는 1분봉 종가 평가곡선 기준이다.
 
 진입을 막는 이유는 두 가지이며, 이 문서에서는 다음 용어로 구분한다.
 
@@ -628,7 +628,7 @@ week02의 평균회귀 전략에 **유로·엔 선물에서 달러가 함께 강
 
 ### 3. 본 실행 후보의 선정 근거
 
-**`fx_base`는 수익 최적값이 아니라 사전에 정의한 모의 관찰용 후보를 유지한 것이다.** [당시 결정 기록](hedge_02/generated_reslults/review_20261126_075617_155978_implementation_and_parameter_decision/parameter_decision.yaml)도 `filter_effectiveness_not_established`로 명시한다.
+**`fx_base`는 수익 최적값이 아니라 사전에 정의한 모의 관찰용 후보를 유지한 것이다.** [당시 결정 기록](fx_filter/results/review_20261126_075617_155978_implementation_and_parameter_decision/parameter_decision.yaml)도 `filter_effectiveness_not_established`로 명시한다.
 
 | 항목 | 선택값 | 선정 근거와 한계 |
 | --- | --- | --- |
@@ -660,12 +660,12 @@ WebSocket 체결 → 완료된 1분봉 생성
 
 | 실행 | 확인된 결과 | 해석 |
 | --- | --- | --- |
-| [11/26 08:40 실행](hedge_02/generated_reslults/live_20261126_084055_708716_fx_base/run_meta.json) | 완료 거래 0건, `requires_manual_reconciliation`, 최종 계좌 포지션 미확인 | 정상 실행·정산 성공으로 집계하지 않음 |
-| [11/27 08:45 본 실행](hedge_02/generated_reslults/live_20261127_084558_564960_fx_base/trades.csv) | 완료 거래 14건, 이익 6건·손실 8건, 합계 +6,000원 | 원시 거래 기록 합산; 수수료 0원 가정 |
-| [11/27 15:30 재실행](hedge_02/generated_reslults/live_20261127_153011_611277_fx_base/run_meta.json) | `completed`, 거래 0건, 최종 계좌 포지션 0 | 15:30 종료 조건 이후 실행 |
-| [11/27 15:31 재실행](hedge_02/generated_reslults/live_20261127_153124_458467_fx_base/run_meta.json) | `completed`, 거래 0건, 최종 계좌 포지션 0 | 별도 실행이며 아침 실행의 종료 기록을 대체하지 않음 |
+| [11/26 08:40 실행](fx_filter/results/live_20261126_084055_708716_fx_base/run_meta.json) | 완료 거래 0건, `requires_manual_reconciliation`, 최종 계좌 포지션 미확인 | 정상 실행·정산 성공으로 집계하지 않음 |
+| [11/27 08:45 본 실행](fx_filter/results/live_20261127_084558_564960_fx_base/trades.csv) | 완료 거래 14건, 이익 6건·손실 8건, 합계 +6,000원 | 원시 거래 기록 합산; 수수료 0원 가정 |
+| [11/27 15:30 재실행](fx_filter/results/live_20261127_153011_611277_fx_base/run_meta.json) | `completed`, 거래 0건, 최종 계좌 포지션 0 | 15:30 종료 조건 이후 실행 |
+| [11/27 15:31 재실행](fx_filter/results/live_20261127_153124_458467_fx_base/run_meta.json) | `completed`, 거래 0건, 최종 계좌 포지션 0 | 별도 실행이며 아침 실행의 종료 기록을 대체하지 않음 |
 
-11/27 본 실행의 익절은 6건, 손절은 8건이며 승률은 약 42.9%다. [FX 진단 기록](hedge_02/generated_reslults/live_20261127_084558_564960_fx_base/fx_diagnostics.csv)은 25건 중 `NO_COMMON_SHOCK` 15건·`UNAVAILABLE` 10건이었다. 기존 진입 조건을 통과한 후 FX 단계에서 실제 차단된 것은 8건이며 모두 자료/피드 가용성에 따른 차단이다. **공통 달러 강세·약세 판정에 따른 차단은 없었다.**
+11/27 본 실행의 익절은 6건, 손절은 8건이며 승률은 약 42.9%다. [FX 진단 기록](fx_filter/results/live_20261127_084558_564960_fx_base/fx_diagnostics.csv)은 25건 중 `NO_COMMON_SHOCK` 15건·`UNAVAILABLE` 10건이었다. 기존 진입 조건을 통과한 후 FX 단계에서 실제 차단된 것은 8건이며 모두 자료/피드 가용성에 따른 차단이다. **공통 달러 강세·약세 판정에 따른 차단은 없었다.**
 
 본 실행에서 WebSocket 시세·주문·체결 기록은 확인되지만, 이것만으로 모든 복구·예외 경로가 검증된 것은 아니다. 11/27 주 실행은 마지막 기록이 15:29:49에 끊기고 `run_meta.json`이 `running`으로 남아 종료 보고서가 없다. 최초 중단 원인은 기록만으로 확정할 수 없다. 이후 재실행에서 잔고 0이 확인됐다는 사실과 주 실행의 정상 종료 여부를 구분한다.
 
@@ -673,7 +673,7 @@ WebSocket 체결 → 완료된 1분봉 생성
 
 ### 5. 추가한 필터의 소스 코드
 
-아래는 현재 소스의 핵심 부분을 발췌한 것이다. 생략된 주변 로직을 포함한 원문은 [analyze.py](hedge_02/analyze.py)와 [run_live.py](hedge_02/run_live.py)에 있다.
+아래는 현재 소스의 핵심 부분을 발췌한 것이다. 생략된 주변 로직을 포함한 원문은 [analyze.py](fx_filter/analyze.py)와 [run_live.py](fx_filter/run_live.py)에 있다.
 
 #### 5.1 기존 엔진에 진입 필터 연결
 
@@ -809,27 +809,27 @@ WebSocket 체결 → 완료된 1분봉 생성
 
 ### 7. 재현 명령과 검증 범위
 
-`hedge_02`에서 실행한다. 다음은 저장 자료로 백테스트를 다시 돌리는 명령이며 새 실행 폴더가 생성된다.
+`fx_filter`에서 실행한다. 다음은 저장 자료로 백테스트를 다시 돌리는 명령이며 새 실행 폴더가 생성된다.
 
 ```powershell
-python .\backtest.py --config .\strategy_config.yaml --all-variants --data-dir .\generated_reslults\data_20261126_021718_739961_fetch-nh --start 2026-10-20 --end 2026-10-30 --out .\generated_reslults
+python .\backtest.py --config .\strategy_config.yaml --all-variants --data-dir .\results\data_20261126_021718_739961_fetch-nh --start 2026-10-20 --end 2026-10-30 --out .\generated_reslults
 
-python .\backtest.py --config .\strategy_config.yaml --variants baseline baseline_common_coverage fx_base --data-dir .\generated_reslults\data_20261126_072510_885775_fetch-nh --start 2026-11-10 --end 2026-11-25 --out .\generated_reslults
+python .\backtest.py --config .\strategy_config.yaml --variants baseline baseline_common_coverage fx_base --data-dir .\results\data_20261126_072510_885775_fetch-nh --start 2026-11-10 --end 2026-11-25 --out .\generated_reslults
 ```
 
 2026-11-27 본 실행에 사용한 자료를 현재 위치에서 참조하는 예시는 다음과 같다. 이후 날짜에는 월물과 과거 자료를 갱신해야 한다. FX 필터 활성화 상태의 주문 실행은 이전 자료가 최소 20일분이고 마지막 관측일이 4일 이내인지 검사한다.
 
 ```powershell
 # 주문 없는 3분 관찰
-python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history-dir .\generated_reslults\data_20261126_072510_885775_fetch-nh --run-minutes 3 --out .\generated_reslults
+python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history-dir .\results\data_20261126_072510_885775_fetch-nh --run-minutes 3 --out .\results
 
 # 국내 모의계좌 주문 활성화
-python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history-dir .\generated_reslults\data_20261126_072510_885775_fetch-nh --trade --out .\generated_reslults
+python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history-dir .\results\data_20261126_072510_885775_fetch-nh --trade --out .\
 ```
 
 인증정보는 `NH_APP_KEY` / `NH_APP_SECRET`, 해외 관측용은 `NH_OVS_APP_KEY` / `NH_OVS_APP_SECRET` 환경변수를 사용한다. 같은 종목의 다른 주문과 섞이지 않도록 시작 시 포지션·미체결이 없는지 검사한다. 15:30 이후에는 실행 루프가 종료 조건에 걸린다.
 
-[2026-11-26 마지막 가짜 응답 검증](hedge_02/generated_reslults/validation_20261126_075023_797953_approved_fake_only/validation.txt)은 **64개 통과**다. 불명 주문·취소 직전 체결·중복 통보·재접속·미래 정보 사용 방지·엔 가격 배율·손절 큐 등을 검증했지만, 이 테스트에서 실제 계좌 주문이나 실제 WebSocket 연결을 검증한 것은 아니다. 11/27 본 실행 기록은 그 이후의 별도 운영 관찰이다. README 작성 과정에서 테스트나 매매를 새로 실행하지 않았다.
+[2026-11-26 마지막 가짜 응답 검증](fx_filter/results/validation_20261126_075023_797953_approved_fake_only/validation.txt)은 **64개 통과**다. 불명 주문·취소 직전 체결·중복 통보·재접속·미래 정보 사용 방지·엔 가격 배율·손절 큐 등을 검증했지만, 이 테스트에서 실제 계좌 주문이나 실제 WebSocket 연결을 검증한 것은 아니다. 11/27 본 실행 기록은 그 이후의 별도 운영 관찰이다. README 작성 과정에서 테스트나 매매를 새로 실행하지 않았다.
 
 다음 분석은 ① 11/27 중단과 최종 계좌 대조 기록 확인, ② 같은 날 데이터의 백테스트와 체결 대조, ③ 자료 부족 차단과 경제적 방향 차단 분리, ④ 실제 수수료·슬리피지 반영, ⑤ 후보를 고정한 새 기간 검증 순서로 진행한다.
 
@@ -839,8 +839,8 @@ python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history
 
 기존 14개 실험 각각에 대해 같은 Python·입력 파일·설정·체결 모형으로 수정 전과 수정 후를 재생했다. 수정 전에는 보관된 `_feature` 메서드만 연결하고, 나머지 엔진은 동일하게 사용했다. **14쌍, 총 28회**의 비교이며 모든 원자료 SHA-256이 과거 실행 기록과 일치하는지 확인했다. 실제 계좌 주문과 본 실행 재시작은 하지 않았다.
 
-- [68개 오프라인 테스트 통과 기록](hedge_02/generated_reslults/endpoint_revalidation/validation_20261127_171004_764060_approved_fake_only/validation.txt)
-- [검증 환경 패키지 버전](hedge_02/generated_reslults/endpoint_revalidation/environment.txt)
+- [68개 오프라인 테스트 통과 기록](fx_filter/results/endpoint_revalidation/validation_20261127_171004_764060_approved_fake_only/validation.txt)
+- [검증 환경 패키지 버전](fx_filter/results/endpoint_revalidation/environment.txt)
 
 #### 기본 후보 `fx_base`의 수정 전후
 
@@ -878,7 +878,7 @@ python .\run_live.py --config .\strategy_config.yaml --variant fx_base --history
 
 원래 10월 `fx_base` 보고서는 -176,000원이지만 동일 환경에서 다시 계산한 수정 전은 -174,000원이다. 따라서 위 비교는 과거 표의 숫자를 그대로 빼지 않고 **같은 환경의 before/after**를 사용했다. 필터가 꺼진 `baseline`은 동일 환경 전후 모두 113건·-225,000원으로 같았다.
 
-별도 수치 민감도 확인에서 엔진의 `sum`을 순차 덧셈으로 바꾸자 10월 `baseline`이 과거 보관값인 112건·-221,000원으로 재현됐다. 이는 경계값 비교가 부동소수점 합산 방식에 민감하다는 증거다. 과거 실행 환경 전체를 복원한 것은 아니므로 모든 차이의 원인을 확정하지 않으며, 이번 수정에 수치 계산 방식 변경은 포함하지 않았다. [수치 민감도 확인 기록](hedge_02/generated_reslults/endpoint_revalidation/numeric_probe.json)
+별도 수치 민감도 확인에서 엔진의 `sum`을 순차 덧셈으로 바꾸자 10월 `baseline`이 과거 보관값인 112건·-221,000원으로 재현됐다. 이는 경계값 비교가 부동소수점 합산 방식에 민감하다는 증거다. 과거 실행 환경 전체를 복원한 것은 아니므로 모든 차이의 원인을 확정하지 않으며, 이번 수정에 수치 계산 방식 변경은 포함하지 않았다. [수치 민감도 확인 기록](fx_filter/results/endpoint_revalidation/numeric_probe.json)
 
 재현은 다음 명령으로 가능하다. 이 스크립트는 과거 설정과 원자료를 읽고 새 폴더에 비교 결과를 만든다.
 
