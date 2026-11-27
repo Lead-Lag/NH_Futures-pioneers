@@ -1,0 +1,66 @@
+{
+  "requested_start": "2026-10-20",
+  "requested_end": "2026-10-30",
+  "calibration_start": "2026-08-19",
+  "sources": {
+    "nh": {
+      "kind": "nh_futures",
+      "environment": "demo",
+      "instruments": {
+        "usdkrw": {
+          "symbol": "A756B000",
+          "status": "empty_response",
+          "rows": 0,
+          "note": "No exact historical contract data confirmed; do not interpret as zero price/return."
+        },
+        "eur": {
+          "symbol": "6EZ26",
+          "status": "empty_response",
+          "rows": 0,
+          "note": "No exact historical contract data confirmed; do not interpret as zero price/return."
+        },
+        "jpy": {
+          "symbol": "6JZ26",
+          "status": "empty_response",
+          "rows": 0,
+          "note": "No exact historical contract data confirmed; do not interpret as zero price/return."
+        }
+      },
+      "cidx_yn": null,
+      "fut_cidx_exp_mod": null,
+      "continuation_warning": "Continuation/adjustment flags do not prove retrieval of an exact expired contract.",
+      "network_circuit_open": false
+    }
+  },
+  "precise_expired_futures_confirmed": false,
+  "files": {
+    "usdkrw": {
+      "filename": "usdkrw.csv",
+      "rows": 0,
+      "sha256": "e6436f0f70a867dffd888bce63a0bd423a84a656c62d79ef6dc25eaa10f2d400",
+      "first_bar": null,
+      "last_bar": null,
+      "days": 0
+    },
+    "eur": {
+      "filename": "eur.csv",
+      "rows": 0,
+      "sha256": "e6436f0f70a867dffd888bce63a0bd423a84a656c62d79ef6dc25eaa10f2d400",
+      "first_bar": null,
+      "last_bar": null,
+      "days": 0
+    },
+    "jpy": {
+      "filename": "jpy.csv",
+      "rows": 0,
+      "sha256": "e6436f0f70a867dffd888bce63a0bd423a84a656c62d79ef6dc25eaa10f2d400",
+      "first_bar": null,
+      "last_bar": null,
+      "days": 0
+    }
+  },
+  "exact_history_alternatives": {
+    "CME_DataMine": "https://www.cmegroup.com/market-data/real-time-and-historical-data.html",
+    "note": "Paid official/licensed contract-by-contract data may be needed. Continuous futures are not exact expired-contract execution history."
+  }
+}

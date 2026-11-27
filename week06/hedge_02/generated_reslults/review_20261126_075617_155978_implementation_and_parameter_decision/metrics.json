@@ -1,0 +1,47 @@
+{
+  "parameter_decision": {
+    "status": "filter_effectiveness_not_established",
+    "live_candidate": "fx_base",
+    "use": "One-contract forward paper observation; not a profitability-validated optimum.",
+    "frozen_filter": {
+      "horizon_minutes": 5,
+      "lookback_days": 20,
+      "bucket_minutes": 30,
+      "threshold": 2.0,
+      "min_move_ticks": 2
+    },
+    "reason": "Prespecified interpretable research candidate. One economic block in October; none in November. No performance-based optimal parameter selection.",
+    "inherited_week02": {
+      "bb_period": 20,
+      "bb_k": 2.0,
+      "min_band_width_ticks": 8,
+      "stop_ticks": 5,
+      "max_hold_bars": 30,
+      "cooldown_bars_after_stop": 3,
+      "qty": 1,
+      "daily_loss_limit": 30000,
+      "max_trades_per_day": 20
+    },
+    "verified_commission": false,
+    "slippage_tested_ticks_per_fill": [
+      1,
+      2
+    ],
+    "actual_websocket_connection_verified": false,
+    "actual_account_orders_sent": "[REDACTED]"
+  },
+  "historical_run_count": 11,
+  "recent_run_count": 3,
+  "validation": {
+    "tests_run": 64,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "network_connections_allowed": false,
+    "account_orders_sent": 0
+  },
+  "data_days": {
+    "October": 9,
+    "November": 12
+  }
+}

@@ -1,0 +1,15 @@
+﻿variant,dataset,n_trades,net_pnl_krw,max_drawdown_krw,fx_direction_blocked_signals,fx_data_blocked_signals,average_trade_krw,run_directory
+baseline,October,112,-221000.0,228000.0,0,0,-1973.2142857142858,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_072425_798383_baseline
+baseline_common_coverage,October,104,-182000.0,204000.0,0,27,-1750.0,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_072545_901228_baseline_common_coverage
+fx_base,October,103,-176000.0,198000.0,1,27,-1708.7378640776699,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_072703_062052_fx_base
+fx_horizon3,October,107,-203000.0,213000.0,0,11,-1897.196261682243,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_072821_833277_fx_horizon3
+fx_horizon10,October,94,-182000.0,194000.0,0,41,-1936.1702127659576,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_072922_798800_fx_horizon10
+fx_threshold1p5,October,97,-183000.0,205000.0,2,25,-1886.5979381443299,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073027_150500_fx_threshold1p5
+fx_threshold2p5,October,104,-182000.0,204000.0,0,27,-1750.0,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073134_899392_fx_threshold2p5
+local_trend,October,71,-159000.0,180000.0,0,21,-2239.43661971831,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073236_490681_local_trend
+baseline_coverage_horizon3,October,107,-203000.0,213000.0,0,11,-1897.196261682243,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073456_811854_baseline_coverage_horizon3
+baseline,November,134,-308000.0,316000.00000000186,0,0,-2298.507462686567,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073511_874428_baseline
+baseline_coverage_horizon10,October,94,-182000.0,194000.0,0,41,-1936.1702127659576,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073638_357237_baseline_coverage_horizon10
+baseline_common_coverage,November,122,-268000.0,276000.00000000186,0,34,-2196.72131147541,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073727_372180_baseline_common_coverage
+fx_cost2,October,66,-258000.0,261000.0,1,6,-3909.090909090909,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073819_190635_fx_cost2
+fx_base,November,122,-268000.0,276000.00000000186,0,34,-2196.72131147541,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_074014_058783_fx_base

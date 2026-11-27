@@ -1,0 +1,53 @@
+{
+  "run_id": "backtest_20261126_072425_798383_baseline",
+  "kind": "backtest",
+  "variant": "baseline",
+  "started_at": "2026-11-26T07:24:25.798+09:00",
+  "command": "python .\\backtest.py --config .\\results\\data_20261126_021718_739961_fetch-nh\\backtest_config.yaml --all-variants --data-dir .\\results\\data_20261126_021718_739961_fetch-nh --start 2026-10-20 --end 2026-10-30",
+  "reconstructed_command": true,
+  "config_source": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\data_20261126_021718_739961_fetch-nh\\backtest_config.yaml",
+  "config_hash": "2dfe2694ce6e5872796ca80b358a65ab376c39717d1653647d87e5ada238eb7a",
+  "git": {
+    "commit": "4c69abdb9cff1bafca17c7888a7e7e054197d079",
+    "tracked_dirty": true,
+    "tracked_changes": [
+      "M week03/check_overseas.py",
+      " M week03/nh_overseas.py",
+      " M week03/run_orb.py",
+      " M week05/kdi_bottleneck.py"
+    ],
+    "note": "Source snapshots include uncommitted implementation files."
+  },
+  "status": "completed",
+  "tests_executed": false,
+  "actual_hedge_orders": false,
+  "code_hashes": {
+    "analyze.py": "4e237948a11bc37f88c38e3ba827983efe2c32a043bcc691a1b352b3ca90fdaa",
+    "backtest.py": "a8bcc4b403215761ca7cadf3cb2b67eb7497b4a402a132b6969b6fc832576498",
+    "config.py": "c83cac84f7fc990da196bb72691c08be5701f03c4d0f1385cc3fa0c12fbddc1f",
+    "data.py": "b57b2e37ea0bf03e8ee3903f2939251082019daa62cc94abed6f87a7b22f2af2",
+    "error.py": "763c7c0a0ac9e99ef43ed5fbc013b0ab5d30e68591dd590c6815b2df736fcae7",
+    "nh_client.py": "7a20ff35c155aabc9f445b1ac233d10b45e13791f626eedd25886fb8360fc7e8",
+    "run_live.py": "46e616f5c3f14b536f63eafe642eec72fe7686d6b7047caee3096480730fdb13",
+    "runtime.py": "47615253d5cd0da7df9e0ade6e5dda46fb7bfb23649ebbb3cf5da884512e8189",
+    "summarize.py": "a206f8f5492f1924982d0a1de234796dbb0ceeeb722c33481429d235619f11b9",
+    "validate.py": "7a7ddf9502ec28f35da1bff2e153b0dfa9f1a5049a29e24b7f1d8be25cb2d474",
+    "visualization.py": "492bcfb5eb7b3c549d87faeba95216ea4f729c7dbab3f2df50c13400d5a8cd2a",
+    "websocket.py": "3750829029734c233acc1b7fdeab88617172d508c86def012ef0839390749929"
+  },
+  "data_inputs": {
+    "usdkrw": {
+      "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\data_20261126_021718_739961_fetch-nh\\usdkrw.csv",
+      "sha256": "fd5754c04b509e4aeb1f24067ecdf9f10a2ee36e1ea801ff79eef379adc86e35"
+    },
+    "eur": {
+      "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\data_20261126_021718_739961_fetch-nh\\eur.csv",
+      "sha256": "bc3cd8a8cfa712eb57da14e1d0bb3c8a0657e79b7556a78feb119f463612db40"
+    },
+    "jpy": {
+      "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\data_20261126_021718_739961_fetch-nh\\jpy.csv",
+      "sha256": "842236f4358129c367eefabff75e149fdd38928ee81d14458aac6bbef2777390"
+    }
+  },
+  "ended_at": "2026-11-26T07:24:52.167+09:00"
+}

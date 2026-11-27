@@ -1,0 +1,13 @@
+﻿ts,market,api,http_status,latency_ms,error_code,message
+2026-11-27T08:36:51.213037+09:00,overseas,token,200,449.7,,
+2026-11-27T08:36:51.297648+09:00,overseas,overseas_minute,200,78.67,,
+2026-11-27T08:36:54.750895+09:00,overseas,overseas_minute,200,59.67,,
+2026-11-27T08:36:57.564590+09:00,domestic,token,200,359.48,,
+2026-11-27T08:36:57.594755+09:00,domestic,domestic_minute,200,33.97,,
+2026-11-27T08:36:57.626814+09:00,domestic,domestic_minute,200,27.17,,
+2026-11-27T08:36:57.829931+09:00,domestic,domestic_minute,200,30.43,,
+2026-11-27T08:36:58.030864+09:00,domestic,domestic_minute,200,31.52,,
+2026-11-27T08:36:58.213292+09:00,domestic,domestic_minute,200,28.27,,
+2026-11-27T08:36:58.413628+09:00,domestic,domestic_minute,200,30.89,,
+2026-11-27T08:36:58.499400+09:00,domestic,web-socket-key,200,30.09,,
+2026-11-27T08:36:58.502128+09:00,overseas,web-socket-key,200,34.43,,

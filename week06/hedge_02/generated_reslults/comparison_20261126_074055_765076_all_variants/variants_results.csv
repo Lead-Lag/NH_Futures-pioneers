@@ -1,0 +1,4 @@
+﻿variant,run_directory,net_pnl_krw,n_trades,max_drawdown_krw,fx_valid_signals,fx_direction_blocked_signals,fx_data_blocked_signals
+baseline_coverage_horizon3,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073456_811854_baseline_coverage_horizon3,-203000.0,107,213000.0,175,0,11
+baseline_coverage_horizon10,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073638_357237_baseline_coverage_horizon10,-182000.0,94,194000.0,143,0,41
+fx_cost2,C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\backtest_20261126_073819_190635_fx_cost2,-258000.0,66,261000.0,163,1,6

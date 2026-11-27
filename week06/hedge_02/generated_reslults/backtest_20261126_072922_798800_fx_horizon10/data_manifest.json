@@ -1,0 +1,109 @@
+{
+  "requested_start": "2026-10-20",
+  "requested_end": "2026-10-30",
+  "calibration_start": "2026-08-19",
+  "sources": {
+    "nh": {
+      "kind": "nh_futures",
+      "environment": "demo",
+      "instruments": {
+        "usdkrw": {
+          "symbol": "A756B000",
+          "status": "empty_response",
+          "rows": 0,
+          "note": "No exact historical contract data confirmed; do not interpret as zero price/return."
+        },
+        "eur": {
+          "symbol": "6EZ26",
+          "status": "collected",
+          "rows": 57209
+        },
+        "jpy": {
+          "symbol": "6JZ26",
+          "status": "collected",
+          "rows": 58387
+        }
+      },
+      "cidx_yn": null,
+      "fut_cidx_exp_mod": null,
+      "continuation_warning": "Continuation/adjustment flags do not prove retrieval of an exact expired contract.",
+      "network_circuit_open": false
+    },
+    "usdkrw_archived_fallback": {
+      "kind": "recorded_domestic_futures",
+      "sources": [
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\data\\bars_20261020_20261026.csv",
+          "sha256": "1f3949b9c9e82950a4157ddc492e36bf8c9865f3fa2dbed1c196b9a16e884322",
+          "status": "loaded",
+          "rows": 2055
+        },
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\results\\run_paper_20261027_090521\\bars.csv",
+          "sha256": "86083725925c6f083eb346308d9dbefbfcef4c1687db23c8cc61e47fe3453092",
+          "status": "loaded",
+          "rows": 48
+        },
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\results\\run_paper_20261027_093818\\bars.csv",
+          "sha256": "0d3d7ccce286e01c0a694d56807615764dad5a5f2123c7ac7c0d554d685dd5d3",
+          "status": "loaded",
+          "rows": 410
+        },
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\results\\run_paper_20261028_090325\\bars.csv",
+          "sha256": "06c25f5ad74442bc5003a9d95183fb032d7118c8f6fdf478504f124370430885",
+          "status": "loaded",
+          "rows": 410
+        },
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\results\\run_paper_20261029_090749\\bars.csv",
+          "sha256": "51defb193027746c6beeea73e48d2fca613420baf7142706a6daabbb31217085",
+          "status": "loaded",
+          "rows": 308
+        },
+        {
+          "path": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week02\\results\\run_paper_20261030_090820\\bars.csv",
+          "sha256": "474f06975fb9fbaf857dea431d8de3d2ec804ecd0dda9ea96d9e6ef5ea9c111c",
+          "status": "loaded",
+          "rows": 410
+        }
+      ],
+      "duplicate_rows": 48,
+      "conflicting_ohlc_rows": 0,
+      "duplicate_policy": "keep_first_and_report_conflicts",
+      "note": "Original OHLC only. Replay anomalies in past orders are not replayed as new orders."
+    }
+  },
+  "precise_expired_futures_confirmed": false,
+  "files": {
+    "usdkrw": {
+      "filename": "usdkrw.csv",
+      "rows": 3593,
+      "sha256": "fd5754c04b509e4aeb1f24067ecdf9f10a2ee36e1ea801ff79eef379adc86e35",
+      "first_bar": "2026-10-20T08:45:00+09:00",
+      "last_bar": "2026-10-30T15:34:00+09:00",
+      "days": 9
+    },
+    "eur": {
+      "filename": "eur.csv",
+      "rows": 57209,
+      "sha256": "bc3cd8a8cfa712eb57da14e1d0bb3c8a0657e79b7556a78feb119f463612db40",
+      "first_bar": "2026-08-19T00:02:00+09:00",
+      "last_bar": "2026-10-30T23:59:00+09:00",
+      "days": 63
+    },
+    "jpy": {
+      "filename": "jpy.csv",
+      "rows": 58387,
+      "sha256": "842236f4358129c367eefabff75e149fdd38928ee81d14458aac6bbef2777390",
+      "first_bar": "2026-08-19T00:02:00+09:00",
+      "last_bar": "2026-10-30T23:59:00+09:00",
+      "days": 63
+    }
+  },
+  "exact_history_alternatives": {
+    "CME_DataMine": "https://www.cmegroup.com/market-data/real-time-and-historical-data.html",
+    "note": "Paid official/licensed contract-by-contract data may be needed. Continuous futures are not exact expired-contract execution history."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "n_trades": 0,
+  "net_pnl_krw": 0,
+  "engine_position_at_end": 0,
+  "broker_position_at_end": null,
+  "orders_enabled": true,
+  "actual_hedge_orders": false,
+  "interpretation": "paper_execution_progress_not_strategy_profitability_proof"
+}

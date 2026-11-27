@@ -1,0 +1,33 @@
+{
+  "command": "fetch-dukascopy",
+  "files": {
+    "usdkrw": {
+      "filename": "usdkrw.csv",
+      "rows": 3593,
+      "sha256": "fd5754c04b509e4aeb1f24067ecdf9f10a2ee36e1ea801ff79eef379adc86e35",
+      "first_bar": "2026-10-20T08:45:00+09:00",
+      "last_bar": "2026-10-30T15:34:00+09:00",
+      "days": 9
+    },
+    "eur": {
+      "filename": "eur.csv",
+      "rows": 0,
+      "sha256": "e6436f0f70a867dffd888bce63a0bd423a84a656c62d79ef6dc25eaa10f2d400",
+      "first_bar": null,
+      "last_bar": null,
+      "days": 0
+    },
+    "jpy": {
+      "filename": "jpy.csv",
+      "rows": 0,
+      "sha256": "e6436f0f70a867dffd888bce63a0bd423a84a656c62d79ef6dc25eaa10f2d400",
+      "first_bar": null,
+      "last_bar": null,
+      "days": 0
+    }
+  },
+  "complete_three_instrument_dataset": false,
+  "research_proxy": true,
+  "parameter_decision": "data_collection_only_no_parameter_selection",
+  "source_manifest": "source_manifest.json"
+}

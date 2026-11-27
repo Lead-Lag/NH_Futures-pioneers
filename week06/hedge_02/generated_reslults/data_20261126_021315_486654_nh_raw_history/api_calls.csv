@@ -1,0 +1,11 @@
+﻿ts,market,api,http_status,latency_ms,error_code,message
+2026-11-26T02:13:18.403415+09:00,domestic,token,200,285.94,,
+2026-11-26T02:13:18.463948+09:00,domestic,domestic_price,200,50.82,,
+2026-11-26T02:13:18.521549+09:00,domestic,domestic_minute,200,40.38,,
+2026-11-26T02:13:18.697546+09:00,domestic,domestic_price,200,104.46,,
+2026-11-26T02:13:18.979177+09:00,domestic,domestic_minute,200,260.84,,
+2026-11-26T02:13:19.216009+09:00,overseas,token,200,209.71,,
+2026-11-26T02:13:19.258321+09:00,overseas,overseas_price,200,37.47,,
+2026-11-26T02:13:19.369138+09:00,overseas,overseas_minute,200,102.82,,
+2026-11-26T02:13:19.594028+09:00,overseas,overseas_price,200,97.84,,
+2026-11-26T02:13:19.719302+09:00,overseas,overseas_minute,200,106.08,,

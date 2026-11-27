@@ -1,0 +1,33 @@
+{
+  "command": "fetch-nh",
+  "files": {
+    "usdkrw": {
+      "filename": "usdkrw.csv",
+      "rows": 3593,
+      "sha256": "fd5754c04b509e4aeb1f24067ecdf9f10a2ee36e1ea801ff79eef379adc86e35",
+      "first_bar": "2026-10-20T08:45:00+09:00",
+      "last_bar": "2026-10-30T15:34:00+09:00",
+      "days": 9
+    },
+    "eur": {
+      "filename": "eur.csv",
+      "rows": 57209,
+      "sha256": "bc3cd8a8cfa712eb57da14e1d0bb3c8a0657e79b7556a78feb119f463612db40",
+      "first_bar": "2026-08-19T00:02:00+09:00",
+      "last_bar": "2026-10-30T23:59:00+09:00",
+      "days": 63
+    },
+    "jpy": {
+      "filename": "jpy.csv",
+      "rows": 58387,
+      "sha256": "842236f4358129c367eefabff75e149fdd38928ee81d14458aac6bbef2777390",
+      "first_bar": "2026-08-19T00:02:00+09:00",
+      "last_bar": "2026-10-30T23:59:00+09:00",
+      "days": 63
+    }
+  },
+  "complete_three_instrument_dataset": true,
+  "research_proxy": false,
+  "parameter_decision": "data_collection_only_no_parameter_selection",
+  "source_manifest": "source_manifest.json"
+}

@@ -1,0 +1,151 @@
+schema_version: 1
+description: week02 볼린저 복귀 규칙을 유지하고 유로·엔의 동시 달러 충격에 역행하는 신규 진입만 제한한다. 해외 통화 포지션을 실제로
+  매매하는 헤지는 아니다. 모든 variants는 탐색용이며 최적값 또는 수익성의 증거로 표시하지 않는다.
+base:
+  strategy:
+    bar_minutes: 1
+    bb_period: 20
+    bb_k: 2.0
+    min_band_width_ticks: 8
+    stop_ticks: 5
+    max_hold_bars: 30
+    cooldown_bars_after_stop: 3
+    qty: 1
+    entry_start: 09:05
+    entry_end: '15:15'
+    flat_time: '15:30'
+    daily_loss_limit: 30000
+    max_trades_per_day: 20
+    tick_size: 0.1
+    tick_value: 1000
+    fee_per_contract: 0.0
+    min_reward_ticks: 0
+    trend_ma_period: 0
+    trend_slope_bars: 10
+    trend_max_slope_ticks: 3
+    stop_mode: fixed
+    stop_buffer_ticks: 1
+    stop_min_ticks: 3
+    stop_max_ticks: 8
+  fx_filter:
+    enabled: true
+    require_coverage: true
+    horizon_minutes: 5
+    lookback_days: 20
+    min_history_days: 20
+    bucket_minutes: 30
+    min_samples: 100
+    threshold: 2.0
+    max_age_seconds: 90
+    require_same_end: true
+    require_positive_volume: true
+    min_sigma: 1.0e-06
+    min_move_ticks: 2
+    eur_tick_size: 5.0e-05
+    jpy_tick_size: 5.0e-07
+    quote_price: trade_close
+    missing_policy: block
+  data:
+    directory: results/data_latest
+    usdkrw_csv: usdkrw.csv
+    eur_csv: eur.csv
+    jpy_csv: jpy.csv
+    start: null
+    end: null
+    timezone: Asia/Seoul
+    domestic_symbol: A756C000
+    eur_symbol: 6EZ26
+    jpy_symbol: 6JZ26
+    overseas_exchange: FCME
+  backtest:
+    slippage_ticks: 1.0
+    initial_equity_krw: 10000000
+    max_next_bar_gap_seconds: 90
+    stale_signal_policy: cancel
+    execution_model: next_bar_open_then_intrabar_stop
+  execution:
+    allow_orders: false
+    fill_timeout_seconds: 10
+    max_order_retries: 0
+    require_flat_start: true
+    flatten_on_exit: true
+  live:
+    run_minutes: 0
+    close_grace_seconds: 2
+    maximum_bar_age_seconds: 90
+    max_history_age_calendar_days: 4
+    reconnect_backoff_seconds:
+    - 1
+    - 2
+    - 5
+    - 10
+    - 30
+  api:
+    environment: paper
+    timeout_seconds: 15
+    quote_requests_per_second: 5
+    chart_timezone: Asia/Seoul
+    price_scale_by_prefix:
+      6J: 0.01
+  reporting:
+    results_dir: results
+    chart_bars_per_page: 180
+    title: USD/KRW Bollinger + overseas FX shock filter
+    notes:
+    - 해외 통화는 신호 관측용이며 별도 해외 매수·매도 포지션은 없다.
+    - 수수료 0원은 기존 규칙 재현용 가정이다. 실제 적용 전 계좌 수수료 확인 필요.
+    - 수치 후보를 전수 조합 최적화하지 않고 한 요소씩 비교한다.
+variants:
+  baseline:
+    description: 기존 2주차 규칙; 해외 자료가 없어도 거래하므로 자료 공백 효과를 따로 비교한다.
+    fx_filter:
+      enabled: false
+      require_coverage: false
+  baseline_common_coverage:
+    description: 해외 자료 요건은 동일하게 적용하되 충격 방향으로 차단하지 않는 대조군.
+    fx_filter:
+      enabled: false
+      require_coverage: true
+  fx_base:
+    description: 5분·20일·2σ의 사전 설계 후보. 최적값 아님.
+  fx_horizon3:
+    description: 관측기간만 3분으로 변경.
+    fx_filter:
+      horizon_minutes: 3
+  baseline_coverage_horizon3:
+    description: 3분 필터와 같은 자료 요건만 적용; 충격 차단 효과를 자료 공백과 구분한다.
+    fx_filter:
+      enabled: false
+      require_coverage: true
+      horizon_minutes: 3
+  fx_horizon10:
+    description: 관측기간만 10분으로 변경.
+    fx_filter:
+      horizon_minutes: 10
+  baseline_coverage_horizon10:
+    description: 10분 필터와 같은 자료 요건만 적용; 충격 차단 효과를 자료 공백과 구분한다.
+    fx_filter:
+      enabled: false
+      require_coverage: true
+      horizon_minutes: 10
+  fx_cost2:
+    description: 5분 기본 후보의 각 체결 슬리피지를 2틱으로 늘린 비용 스트레스.
+    backtest:
+      slippage_ticks: 2.0
+  fx_threshold1p5:
+    description: 충격 기준만 1.5로 변경.
+    fx_filter:
+      threshold: 1.5
+  fx_threshold2p5:
+    description: 충격 기준만 2.5로 변경.
+    fx_filter:
+      threshold: 2.5
+  local_trend:
+    description: 기존 원/달러 이동평균 기울기 필터 대조군; 해외 자료 요건은 동일.
+    strategy:
+      trend_ma_period: 60
+      trend_slope_bars: 10
+      trend_max_slope_ticks: 3
+    fx_filter:
+      enabled: false
+      require_coverage: true

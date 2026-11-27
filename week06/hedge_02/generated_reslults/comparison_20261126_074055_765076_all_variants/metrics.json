@@ -1,0 +1,36 @@
+{
+  "variants": [
+    {
+      "variant": "baseline_coverage_horizon3",
+      "run_directory": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\backtest_20261126_073456_811854_baseline_coverage_horizon3",
+      "net_pnl_krw": -203000.0,
+      "n_trades": 107,
+      "max_drawdown_krw": 213000.0,
+      "fx_valid_signals": 175,
+      "fx_direction_blocked_signals": 0,
+      "fx_data_blocked_signals": 11
+    },
+    {
+      "variant": "baseline_coverage_horizon10",
+      "run_directory": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\backtest_20261126_073638_357237_baseline_coverage_horizon10",
+      "net_pnl_krw": -182000.0,
+      "n_trades": 94,
+      "max_drawdown_krw": 194000.0,
+      "fx_valid_signals": 143,
+      "fx_direction_blocked_signals": 0,
+      "fx_data_blocked_signals": 41
+    },
+    {
+      "variant": "fx_cost2",
+      "run_directory": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\results\\backtest_20261126_073819_190635_fx_cost2",
+      "net_pnl_krw": -258000.0,
+      "n_trades": 66,
+      "max_drawdown_krw": 261000.0,
+      "fx_valid_signals": 163,
+      "fx_direction_blocked_signals": 1,
+      "fx_data_blocked_signals": 6
+    }
+  ],
+  "failed_variants": 0,
+  "parameter_decision": "not_selected_from_exploratory_results"
+}

@@ -1,0 +1,95 @@
+api:
+  chart_timezone: Asia/Seoul
+  environment: paper
+  price_scale_by_prefix:
+    6J: 0.01
+  quote_requests_per_second: 5
+  timeout_seconds: 15
+backtest:
+  execution_model: next_bar_open_then_intrabar_stop
+  initial_equity_krw: 10000000
+  max_next_bar_gap_seconds: 90
+  slippage_ticks: 1.0
+  stale_signal_policy: cancel
+data:
+  directory: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh
+  domestic_symbol: A756C000
+  end: '2026-10-30'
+  eur_csv: eur.csv
+  eur_symbol: 6EZ26
+  jpy_csv: jpy.csv
+  jpy_symbol: 6JZ26
+  overseas_exchange: FCME
+  source_kind: recorded_or_nh_futures
+  start: '2026-10-20'
+  timezone: Asia/Seoul
+  usdkrw_csv: usdkrw.csv
+description: 충격 기준만 2.5로 변경.
+execution:
+  allow_orders: false
+  fill_timeout_seconds: 10
+  flatten_on_exit: true
+  max_order_retries: 0
+  require_flat_start: true
+fx_filter:
+  bucket_minutes: 30
+  enabled: true
+  eur_tick_size: 5.0e-05
+  horizon_minutes: 5
+  jpy_tick_size: 5.0e-07
+  lookback_days: 20
+  max_age_seconds: 90
+  min_history_days: 20
+  min_move_ticks: 2
+  min_samples: 100
+  min_sigma: 1.0e-06
+  missing_policy: block
+  quote_price: trade_close
+  require_coverage: true
+  require_positive_volume: true
+  require_same_end: true
+  threshold: 2.5
+live:
+  close_grace_seconds: 2
+  maximum_bar_age_seconds: 90
+  reconnect_backoff_seconds:
+  - 1
+  - 2
+  - 5
+  - 10
+  - 30
+  run_minutes: 0
+reporting:
+  chart_bars_per_page: 180
+  notes:
+  - 해외 통화는 신호 관측용이며 별도 해외 매수·매도 포지션은 없다.
+  - 수수료 0원은 기존 규칙 재현용 가정이다. 실제 적용 전 계좌 수수료 확인 필요.
+  - 수치 후보를 전수 조합 최적화하지 않고 한 요소씩 비교한다.
+  results_dir: results
+  title: USD/KRW Bollinger + overseas FX shock filter
+strategy:
+  bar_minutes: 1
+  bb_k: 2.0
+  bb_period: 20
+  cooldown_bars_after_stop: 3
+  daily_loss_limit: 30000
+  entry_end: '15:15'
+  entry_start: 09:05
+  fee_per_contract: 0.0
+  flat_time: '15:30'
+  max_hold_bars: 30
+  max_trades_per_day: 20
+  min_band_width_ticks: 8
+  min_reward_ticks: 0
+  qty: 1
+  stop_buffer_ticks: 1
+  stop_max_ticks: 8
+  stop_min_ticks: 3
+  stop_mode: fixed
+  stop_ticks: 5
+  tick_size: 0.1
+  tick_value: 1000
+  trend_ma_period: 0
+  trend_max_slope_ticks: 3
+  trend_slope_bars: 10
+variant_name: fx_threshold2p5

@@ -1,0 +1,143 @@
+metadata:
+  run_id: backtest_20261126_072703_062052_fx_base
+  kind: backtest
+  variant: fx_base
+  started_at: '2026-11-26T07:27:03.062+09:00'
+  command: python .\backtest.py --config .\results\data_20261126_021718_739961_fetch-nh\backtest_config.yaml
+    --all-variants --data-dir .\results\data_20261126_021718_739961_fetch-nh --start
+    2026-10-20 --end 2026-10-30
+  reconstructed_command: true
+  config_source: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh\backtest_config.yaml
+  config_hash: 7bec1437a828cdc160f6431adf9c077b3fb56bf1512a409cef683204814d10df
+  git:
+    commit: 4c69abdb9cff1bafca17c7888a7e7e054197d079
+    tracked_dirty: true
+    tracked_changes:
+    - M week03/check_overseas.py
+    - ' M week03/nh_overseas.py'
+    - ' M week03/run_orb.py'
+    - ' M week05/kdi_bottleneck.py'
+    note: Source snapshots include uncommitted implementation files.
+  status: completed
+  tests_executed: false
+  actual_hedge_orders: false
+  code_hashes:
+    analyze.py: 4e237948a11bc37f88c38e3ba827983efe2c32a043bcc691a1b352b3ca90fdaa
+    backtest.py: a8bcc4b403215761ca7cadf3cb2b67eb7497b4a402a132b6969b6fc832576498
+    config.py: c83cac84f7fc990da196bb72691c08be5701f03c4d0f1385cc3fa0c12fbddc1f
+    data.py: b57b2e37ea0bf03e8ee3903f2939251082019daa62cc94abed6f87a7b22f2af2
+    error.py: 763c7c0a0ac9e99ef43ed5fbc013b0ab5d30e68591dd590c6815b2df736fcae7
+    nh_client.py: 7a20ff35c155aabc9f445b1ac233d10b45e13791f626eedd25886fb8360fc7e8
+    run_live.py: 46e616f5c3f14b536f63eafe642eec72fe7686d6b7047caee3096480730fdb13
+    runtime.py: 47615253d5cd0da7df9e0ade6e5dda46fb7bfb23649ebbb3cf5da884512e8189
+    summarize.py: a206f8f5492f1924982d0a1de234796dbb0ceeeb722c33481429d235619f11b9
+    validate.py: 7a7ddf9502ec28f35da1bff2e153b0dfa9f1a5049a29e24b7f1d8be25cb2d474
+    visualization.py: 492bcfb5eb7b3c549d87faeba95216ea4f729c7dbab3f2df50c13400d5a8cd2a
+    websocket.py: 3750829029734c233acc1b7fdeab88617172d508c86def012ef0839390749929
+  data_inputs:
+    usdkrw:
+      path: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh\usdkrw.csv
+      sha256: fd5754c04b509e4aeb1f24067ecdf9f10a2ee36e1ea801ff79eef379adc86e35
+    eur:
+      path: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh\eur.csv
+      sha256: bc3cd8a8cfa712eb57da14e1d0bb3c8a0657e79b7556a78feb119f463612db40
+    jpy:
+      path: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh\jpy.csv
+      sha256: 842236f4358129c367eefabff75e149fdd38928ee81d14458aac6bbef2777390
+  ended_at: '2026-11-26T07:27:28.516+09:00'
+resolved_config:
+  strategy:
+    bar_minutes: 1
+    bb_period: 20
+    bb_k: 2.0
+    min_band_width_ticks: 8
+    stop_ticks: 5
+    max_hold_bars: 30
+    cooldown_bars_after_stop: 3
+    qty: 1
+    entry_start: 09:05
+    entry_end: '15:15'
+    flat_time: '15:30'
+    daily_loss_limit: 30000
+    max_trades_per_day: 20
+    tick_size: 0.1
+    tick_value: 1000
+    fee_per_contract: 0.0
+    min_reward_ticks: 0
+    trend_ma_period: 0
+    trend_slope_bars: 10
+    trend_max_slope_ticks: 3
+    stop_mode: fixed
+    stop_buffer_ticks: 1
+    stop_min_ticks: 3
+    stop_max_ticks: 8
+  fx_filter:
+    enabled: true
+    require_coverage: true
+    horizon_minutes: 5
+    lookback_days: 20
+    min_history_days: 20
+    bucket_minutes: 30
+    min_samples: 100
+    threshold: 2.0
+    max_age_seconds: 90
+    require_same_end: true
+    require_positive_volume: true
+    min_sigma: 1.0e-06
+    min_move_ticks: 2
+    eur_tick_size: 5.0e-05
+    jpy_tick_size: 5.0e-07
+    quote_price: trade_close
+    missing_policy: block
+  data:
+    directory: C:\Users\vlfph\Documents\GitHub\NH_Futures-pioneers\week06\hedge_02\results\data_20261126_021718_739961_fetch-nh
+    usdkrw_csv: usdkrw.csv
+    eur_csv: eur.csv
+    jpy_csv: jpy.csv
+    start: '2026-10-20'
+    end: '2026-10-30'
+    timezone: Asia/Seoul
+    domestic_symbol: A756C000
+    eur_symbol: 6EZ26
+    jpy_symbol: 6JZ26
+    overseas_exchange: FCME
+    source_kind: recorded_or_nh_futures
+  backtest:
+    slippage_ticks: 1.0
+    initial_equity_krw: 10000000
+    max_next_bar_gap_seconds: 90
+    stale_signal_policy: cancel
+    execution_model: next_bar_open_then_intrabar_stop
+  execution:
+    allow_orders: false
+    fill_timeout_seconds: 10
+    max_order_retries: 0
+    require_flat_start: true
+    flatten_on_exit: true
+  live:
+    run_minutes: 0
+    close_grace_seconds: 2
+    maximum_bar_age_seconds: 90
+    reconnect_backoff_seconds:
+    - 1
+    - 2
+    - 5
+    - 10
+    - 30
+  api:
+    environment: paper
+    timeout_seconds: 15
+    quote_requests_per_second: 5
+    chart_timezone: Asia/Seoul
+    price_scale_by_prefix:
+      6J: 0.01
+  reporting:
+    results_dir: results
+    chart_bars_per_page: 180
+    title: USD/KRW Bollinger + overseas FX shock filter
+    notes:
+    - 해외 통화는 신호 관측용이며 별도 해외 매수·매도 포지션은 없다.
+    - 수수료 0원은 기존 규칙 재현용 가정이다. 실제 적용 전 계좌 수수료 확인 필요.
+    - 수치 후보를 전수 조합 최적화하지 않고 한 요소씩 비교한다.
+  description: 5분·20일·2σ의 사전 설계 후보. 최적값 아님.
+  variant_name: fx_base

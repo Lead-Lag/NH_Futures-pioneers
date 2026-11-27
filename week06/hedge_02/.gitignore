@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.cache/
+*.token.json
+config.local.json
+.venv-revalidation/
+
+# Submission documentation: only the root README is tracked.
+*.[mM][dD]
+!/README.md

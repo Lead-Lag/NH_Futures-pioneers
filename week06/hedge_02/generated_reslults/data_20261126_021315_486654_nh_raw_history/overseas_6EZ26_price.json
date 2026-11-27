@@ -1,0 +1,33 @@
+{
+  "Occurs1": [
+    {
+      "occurs1_sym": "6EZ26",
+      "occurs1_high_pric": "1.09935",
+      "occurs1_last_pric": "1.09920",
+      "occurs1_rt": "0.15",
+      "occurs1_life_high_dt": "20260127",
+      "occurs1_sett_pric": "1.09750",
+      "occurs1_life_low_dt": "20261123",
+      "occurs1_ris_trd_qty": "12649",
+      "occurs1_fal_trd_qty": "145218",
+      "occurs1_life_high_pric": "1.22095",
+      "occurs1_pre_close_pric": "1.09750",
+      "occurs1_biz_dt": "20261125",
+      "occurs1_cum_trd_qty": "157869",
+      "occurs1_open_pric": "1.09745",
+      "occurs1_low_pric": "1.09400",
+      "occurs1_ask_pric": "1.09920",
+      "occurs1_diff_rt": "0.00170",
+      "occurs1_sym_nm": "Euro FX",
+      "occurs1_life_low_pric": "1.08910",
+      "occurs1_exch_cd": "CME",
+      "occurs1_bid_pric": "1.09915",
+      "occurs1_trd_tm": "021315",
+      "occurs1_real_sym": "6EZ26",
+      "occurs1_ask_qty": "000000000027",
+      "occurs1_bid_qty": "000000000094",
+      "occurs1_pre_sett_dy": "20261124"
+    }
+  ],
+  "nrec": "1"
+}

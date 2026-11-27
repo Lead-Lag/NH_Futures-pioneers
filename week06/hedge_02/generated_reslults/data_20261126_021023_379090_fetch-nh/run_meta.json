@@ -1,0 +1,42 @@
+{
+  "run_id": "data_20261126_021023_379090_fetch-nh",
+  "kind": "data",
+  "variant": "fetch-nh",
+  "started_at": "2026-11-26T02:10:23.379+09:00",
+  "command": "python .\\data.py fetch-nh --config .\\strategy_config.yaml --start 2026-10-20 --end 2026-10-30 --domestic-symbol A756B000 --calibration-days 20 --timeout 5 --max-failures 1",
+  "reconstructed_command": true,
+  "config_source": "C:\\Users\\vlfph\\Documents\\GitHub\\NH_Futures-pioneers\\week06\\hedge_02\\strategy_config.yaml",
+  "config_hash": "8d335cbf7ed32d156e365a6cf7c6b2c8769eaedaf2e8aa2992a9d8270f9457c8",
+  "git": {
+    "commit": "4c69abdb9cff1bafca17c7888a7e7e054197d079",
+    "tracked_dirty": true,
+    "tracked_changes": [
+      "M week03/check_overseas.py",
+      " M week03/nh_overseas.py",
+      " M week03/run_orb.py",
+      " M week05/kdi_bottleneck.py"
+    ],
+    "note": "Source snapshots include uncommitted implementation files."
+  },
+  "status": "failed",
+  "tests_executed": false,
+  "actual_hedge_orders": false,
+  "code_hashes": {
+    "analyze.py": "4e237948a11bc37f88c38e3ba827983efe2c32a043bcc691a1b352b3ca90fdaa",
+    "backtest.py": "a8bcc4b403215761ca7cadf3cb2b67eb7497b4a402a132b6969b6fc832576498",
+    "config.py": "c83cac84f7fc990da196bb72691c08be5701f03c4d0f1385cc3fa0c12fbddc1f",
+    "data.py": "7bbd0c806f59aa852520eec9a16bcbb07e0d98de2cd96a3610e8885266beb461",
+    "error.py": "000fda619cc9968ea765fee949f2f95243ae71b8102e0edac40e827ae6893c93",
+    "nh_client.py": "f8cb293ad3de2ca483f3f03ad1d5923b1ee721762a06cfb7aa8177aa73133344",
+    "run_live.py": "a0c94389bc33873a5f94c2217ce57e2945859d8d91a10010d346b7a0da8a5a8d",
+    "runtime.py": "47615253d5cd0da7df9e0ade6e5dda46fb7bfb23649ebbb3cf5da884512e8189",
+    "summarize.py": "e3e8d8a1a5ce9b7f7110a0b5bc5cdae996557767645ac144571f6aa96696fed3",
+    "visualization.py": "492bcfb5eb7b3c549d87faeba95216ea4f729c7dbab3f2df50c13400d5a8cd2a",
+    "websocket.py": "23ed4c499b28a0f4b8c96add9169bc3a3bf65d92890475c6096d972698925139"
+  },
+  "data_command": "fetch-nh",
+  "requested_start": "2026-10-20",
+  "requested_end": "2026-10-30",
+  "calibration_start": "2026-08-19",
+  "ended_at": "2026-11-26T02:12:23.928+09:00"
+}

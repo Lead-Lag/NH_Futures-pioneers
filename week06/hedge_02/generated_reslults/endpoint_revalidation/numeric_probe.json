@@ -1,0 +1,6 @@
+{
+  "experiment": "analyze.sum replaced by sequential addition; baseline no FX gating",
+  "n_trades": 112,
+  "net_pnl_krw": -221000.0,
+  "purpose": "isolate sensitivity to floating point summation; not a production code change"
+}

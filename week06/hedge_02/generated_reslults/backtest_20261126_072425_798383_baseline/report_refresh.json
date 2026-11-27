@@ -1,0 +1,10 @@
+{
+  "refreshed_at": "2026-11-26T07:49:46.341986+09:00",
+  "calculation_replayed": false,
+  "reason": "FX samples at signal times are scatter points, not an interpolated time series.",
+  "metrics_sha256": "def70d921651c0c38ba1cad2c3d41f19ff0f0e9e15b2c0ee40a14820daa8e4c5",
+  "report_source_hashes": {
+    "visualization.py": "28b635a7978720bc616146e8963c6c09de976960133385c0a83aeb8906083950",
+    "summarize.py": "ff9f207cce9e0f5d3e609d466225823a69986f624c6890368f8d163f6ce6a06a"
+  }
+}
